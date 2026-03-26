@@ -2,9 +2,9 @@
 
 ## Datum: 2026-03-26
 
-## Vad som byggts denna session
+## Vad som byggts
 
-### Core engine
+### Core engine (shared/)
 - Playwright screenshots (desktop + mobil, CSS-selektorer, cookies/auth)
 - Pixelmatch pixel-diff med konfigurerbar tröskel
 - OpenAI GPT-4o Vision-analys med importance scoring
@@ -13,43 +13,47 @@
 - Screenshot-arkivering med retention, daglig rapport, CSV/JSON-export
 
 ### Landing page (landing/)
-- Astro + Tailwind, dark theme, 8 sektioner
-- Live på **https://changebrief.io** (Cloudflare Pages)
-- Checkout-knappar kopplade till Polar
-
-### Betalning (Polar)
-- Konto: changebrief (Individual)
-- Stripe kopplad + ID-verifierad
-- Pro ($19/mån) och Team ($49/mån) produkter skapade
-- Checkout-länkar kopplade i landing page
-- Fortfarande i Test Mode — behöver "Go Live" i Polar
+- Astro + Tailwind, live på https://changebrief.io (Cloudflare Pages)
+- 8 sektioner: Hero, Problem, HowItWorks, UseCases, Features, Pricing, FAQ, Footer
+- Checkout-knappar kopplade till Polar, CTA-knappar till app.changebrief.io
 
 ### Webbapp (app/)
-- Next.js + Auth.js + SQLite
-- GitHub-login fungerar (testat lokalt)
+- Next.js + Auth.js + SQLite, live på https://app.changebrief.io (Vercel)
+- GitHub + Google login (Google i test mode)
 - Dashboard: lägg till/ta bort URLs, visa historik, plangränser
 - API: GET/POST/DELETE /api/urls
-- Kör på localhost:3000
 
-### DNS & hosting
-- changebrief.io köpt på Namecheap
-- CNAME → pagewatch-d52.pages.dev (propagerat, SSL fungerar)
+### Betalning
+- Polar: changebrief (Individual), 2 produkter (Pro $19, Team $49)
+- Stripe kopplad + ID-verifierad, i TEST MODE
+- Checkout-länkar i landing page
+
+### Infrastruktur
+- Domän: changebrief.io (Namecheap)
+- DNS: @ och www → Cloudflare Pages, app → Vercel
 - GitHub: TWINDEJ/pagewatch
 
-## Nästa steg
-1. **Deploya webbappen** till Vercel + koppla app.changebrief.io
-2. **Google OAuth** — skapa credentials i Google Cloud Console
-3. **Koppla core engine till webbappen** — cron-jobb som kör screenshots för alla användares URLs
-4. **Polar "Go Live"** — aktivera riktiga betalningar
-5. **Regenerera GitHub client secret** (exponerades i chatten)
-6. **Landing page CTA-knappar** — peka "Kom igång gratis" och hero-CTA till app.changebrief.io/login
+## Blockerare innan kundlansering
+1. SQLite → databas som fungerar i serverless (Turso/Supabase)
+2. Core engine inte kopplad till webbappen
+3. Google OAuth i test mode
+4. Polar i test mode
+5. Secrets exponerade i chatten → regenerera
 
-## Filer att känna till
-- `app/.env.local` — auth secrets (gitignored)
-- `app/src/lib/db.ts` — SQLite databas-schema
-- `app/src/lib/auth.ts` — NextAuth config
-- `.env` — OpenAI API-nyckel (gitignored)
-- `data/urls.json` — CLI-konfiguration (separat från webbappen)
+## Se NEXT-STEPS.md för detaljerad plan
 
-## Dev-server
-Webbappen körs möjligen fortfarande: `cd app && npm run dev` (port 3000)
+## Dev-kommandon
+```bash
+# Landing page
+cd landing && npm run build && npx wrangler pages deploy dist --project-name pagewatch
+
+# Webbapp lokalt
+cd app && npm run dev
+
+# Deploy webbapp
+cd app && npx vercel --prod
+
+# Core engine
+npm run check          # Kör bevakning
+npm run cli -- list    # Visa URLs
+```
