@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import { createClient } from '@libsql/client';
 import { takeScreenshot } from '../shared/screenshot';
-import { compareScreenshots } from '../shared/diff';
-import { analyzeChange } from '../shared/vision';
+import { compareScreenshots, compareStructured } from '../shared/diff';
+import { analyzeChange, shouldAnalyze } from '../shared/vision';
+import { sendEmailNotification, sendSlackNotification } from '../shared/notify';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -22,6 +23,8 @@ async function initSchema() {
       image TEXT,
       plan TEXT DEFAULT 'free',
       polar_customer_id TEXT,
+      notify_email INTEGER DEFAULT 1,
+      slack_webhook_url TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS watched_urls (
@@ -52,68 +55,168 @@ async function initSchema() {
       checked_at TEXT DEFAULT (datetime('now'))
     );
   `);
+  // Add columns if they don't exist (migration)
+  for (const col of [
+    'ALTER TABLE users ADD COLUMN notify_email INTEGER DEFAULT 1',
+    'ALTER TABLE users ADD COLUMN slack_webhook_url TEXT',
+    'ALTER TABLE watched_urls ADD COLUMN last_checked_at TEXT',
+    'ALTER TABLE watched_urls ADD COLUMN last_error TEXT',
+    'ALTER TABLE watched_urls ADD COLUMN consecutive_errors INTEGER DEFAULT 0',
+    'ALTER TABLE watched_urls ADD COLUMN cookies TEXT',
+    'ALTER TABLE watched_urls ADD COLUMN headers TEXT',
+    'ALTER TABLE users ADD COLUMN weekly_digest INTEGER DEFAULT 1',
+  ]) {
+    try { await db.execute(col); } catch { /* already exists */ }
+  }
+}
+
+async function sendNotifications(row: any, analysis: any, diffPercent: number) {
+  const { url, name, email, notify_email, slack_webhook_url, min_importance } = row;
+
+  // Only notify if importance meets threshold
+  if (analysis.importance < (min_importance ?? 5)) {
+    console.log(`  → Importance ${analysis.importance} < threshold ${min_importance ?? 5}, skipping notifications`);
+    return;
+  }
+
+  const promises: Promise<void>[] = [];
+
+  // Email notification
+  if (notify_email && email) {
+    promises.push(sendEmailNotification(email, name, url, analysis));
+  }
+
+  // Slack notification (per-user webhook URL)
+  if (slack_webhook_url) {
+    promises.push(sendSlackNotification(slack_webhook_url, url, name, analysis, diffPercent));
+  }
+
+  if (promises.length > 0) {
+    const results = await Promise.allSettled(promises);
+    for (const result of results) {
+      if (result.status === 'rejected') {
+        console.error(`  → Notification failed: ${result.reason}`);
+      }
+    }
+  }
 }
 
 async function checkUrl(row: any) {
   const { user_id, url, name, threshold, selector, mobile } = row;
-  console.log(`\nKollar: ${name} (${url})`);
+  console.log(`\nChecking: ${name} (${url})`);
+
+  // Parse cookies and headers from DB (stored as JSON strings)
+  let cookies: Array<{name: string; value: string; domain: string}> | undefined;
+  let headers: Record<string, string> | undefined;
+  try {
+    if (row.cookies) cookies = JSON.parse(row.cookies);
+    if (row.headers) headers = JSON.parse(row.headers);
+  } catch { /* invalid JSON, skip */ }
+
+  const screenshotOpts = {
+    selector: selector || undefined,
+    mobile: !!mobile,
+    cookies,
+    headers,
+  };
 
   const slug = url.replace(/[^a-z0-9]/gi, '_');
   const suffix = mobile ? '_mobile' : '';
   const beforePath = path.join(DATA_DIR, `${slug}${suffix}_before.png`);
   const afterPath = path.join(DATA_DIR, `${slug}${suffix}_after.png`);
   const diffPath = path.join(DATA_DIR, `${slug}${suffix}_diff.png`);
+  const beforeJsonPath = beforePath.replace('.png', '.json');
+  const afterJsonPath = afterPath.replace('.png', '.json');
 
-  // Första körningen — spara baseline
+  // First run — capture baseline
   if (!fs.existsSync(beforePath)) {
-    console.log('  → Ingen baseline. Sparar...');
-    await takeScreenshot(url, beforePath, {
-      selector: selector || undefined,
-      mobile: !!mobile,
-    });
+    console.log('  → No baseline. Capturing...');
+    await takeScreenshot(url, beforePath, screenshotOpts);
     return;
   }
 
-  // Ta ny skärmdump
-  await takeScreenshot(url, afterPath, {
-    selector: selector || undefined,
-    mobile: !!mobile,
-  });
+  // Take new screenshot + extract structure
+  await takeScreenshot(url, afterPath, screenshotOpts);
 
-  // Jämför
-  const diff = await compareScreenshots(beforePath, afterPath, diffPath);
-  console.log(`  → Diff: ${diff.changePercent.toFixed(2)}%`);
+  // Compare pixels
+  const pixelDiff = await compareScreenshots(beforePath, afterPath, diffPath);
+  console.log(`  → Pixel diff: ${pixelDiff.changePercent.toFixed(2)}%`);
+
+  // Compare structured content
+  let structuredDiff = null;
+  if (fs.existsSync(beforeJsonPath) && fs.existsSync(afterJsonPath)) {
+    structuredDiff = compareStructured(beforeJsonPath, afterJsonPath);
+    if (structuredDiff.hasChanged) {
+      console.log(`  → Content changed: ${structuredDiff.summary.split('\n')[0]}`);
+    } else {
+      console.log('  → Content: no structural changes');
+    }
+  }
 
   const effectiveThreshold = threshold ?? 0.3;
+  const pixelTriggered = pixelDiff.changePercent > effectiveThreshold;
+  const textTriggered = structuredDiff?.hasChanged ?? false;
 
-  if (diff.changePercent > effectiveThreshold) {
-    console.log('  → Analyserar med GPT-4o Vision...');
-    const analysis = await analyzeChange(beforePath, afterPath, url);
-    console.log(`  → ${analysis.summary} (${analysis.importance}/10)`);
+  if (pixelTriggered || textTriggered) {
+    // Pre-filter: är detta värt en full analys?
+    let worthAnalyzing = pixelTriggered; // Pixel-diff alltid värt att analysera
+    if (!worthAnalyzing && structuredDiff) {
+      worthAnalyzing = await shouldAnalyze(structuredDiff);
+    }
 
-    await db.execute({
-      sql: `INSERT INTO change_history (user_id, url, name, change_percent, summary, importance, changed_elements, has_significant_change)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      args: [
-        user_id, url, name, diff.changePercent,
-        analysis.summary, analysis.importance,
-        JSON.stringify(analysis.changedElements),
-        analysis.hasSignificantChange ? 1 : 0
-      ]
-    });
+    if (worthAnalyzing) {
+      console.log('  → Analyzing with GPT-4o Vision...');
+      const analysis = await analyzeChange(
+        beforePath,
+        afterPath,
+        url,
+        structuredDiff?.summary
+      );
+      console.log(`  → ${analysis.summary} (${analysis.importance}/10)`);
+
+      await db.execute({
+        sql: `INSERT INTO change_history (user_id, url, name, change_percent, summary, importance, changed_elements, has_significant_change)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        args: [
+          user_id, url, name, pixelDiff.changePercent,
+          analysis.summary, analysis.importance,
+          JSON.stringify(analysis.changedElements),
+          analysis.hasSignificantChange ? 1 : 0
+        ]
+      });
+
+      // Send notifications
+      await sendNotifications(row, analysis, pixelDiff.changePercent);
+    } else {
+      console.log('  → Pre-filter: not worth full analysis, logging as minor.');
+      await db.execute({
+        sql: `INSERT INTO change_history (user_id, url, name, change_percent, has_significant_change)
+              VALUES (?, ?, ?, ?, 0)`,
+        args: [user_id, url, name, pixelDiff.changePercent]
+      });
+    }
   } else {
-    console.log('  → Ingen signifikant ändring.');
+    console.log('  → No significant change.');
     await db.execute({
       sql: `INSERT INTO change_history (user_id, url, name, change_percent, has_significant_change)
             VALUES (?, ?, ?, ?, 0)`,
-      args: [user_id, url, name, diff.changePercent]
+      args: [user_id, url, name, pixelDiff.changePercent]
     });
   }
 
-  // Rotera
+  // Rotate baselines
   if (fs.existsSync(afterPath)) {
     fs.copyFileSync(afterPath, beforePath);
   }
+  if (fs.existsSync(afterJsonPath)) {
+    fs.copyFileSync(afterJsonPath, beforeJsonPath);
+  }
+
+  // Mark success
+  await db.execute({
+    sql: 'UPDATE watched_urls SET last_checked_at = datetime(\'now\'), last_error = NULL, consecutive_errors = 0 WHERE id = ?',
+    args: [row.id]
+  });
 }
 
 async function main() {
@@ -121,26 +224,44 @@ async function main() {
   await initSchema();
 
   const result = await db.execute({
-    sql: 'SELECT wu.*, u.email, u.plan FROM watched_urls wu JOIN users u ON wu.user_id = u.id WHERE wu.active = 1',
+    sql: 'SELECT wu.*, u.email, u.plan, u.notify_email, u.slack_webhook_url FROM watched_urls wu JOIN users u ON wu.user_id = u.id WHERE wu.active = 1',
     args: []
   });
 
   if (result.rows.length === 0) {
-    console.log('Inga aktiva URLs att kontrollera.');
+    console.log('No active URLs to check.');
     return;
   }
 
-  console.log(`Kontrollerar ${result.rows.length} URLs...`);
+  console.log(`Checking ${result.rows.length} URLs...`);
 
   for (const row of result.rows) {
     try {
       await checkUrl(row);
-    } catch (err) {
-      console.error(`  → Fel vid ${row.url}: ${err}`);
+    } catch (err: any) {
+      const errorMsg = err.message || String(err);
+      const consecutive = (Number(row.consecutive_errors) || 0) + 1;
+      console.error(`  → Error checking ${row.url} (${consecutive}x): ${errorMsg}`);
+
+      // Save error status
+      await db.execute({
+        sql: 'UPDATE watched_urls SET last_checked_at = datetime(\'now\'), last_error = ?, consecutive_errors = ? WHERE id = ?',
+        args: [errorMsg.slice(0, 500), consecutive, row.id]
+      });
+
+      // Notify user after 3 consecutive failures
+      if (consecutive === 3 && row.notify_email && row.email) {
+        await sendEmailNotification(
+          row.email,
+          row.name,
+          row.url,
+          { summary: `This page has failed 3 checks in a row: ${errorMsg}`, importance: 6, changedElements: ['Page unreachable'], hasSignificantChange: false }
+        );
+      }
     }
   }
 
-  console.log('\nKlart!');
+  console.log('\nDone!');
 }
 
 main().catch(console.error);

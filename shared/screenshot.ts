@@ -1,4 +1,6 @@
 import { chromium } from 'playwright';
+import * as fs from 'fs';
+import { extractStructure, stripNoise, type PageStructure } from './extract';
 
 export interface ScreenshotOptions {
   selector?: string;   // CSS-selektor — screenshota bara detta element
@@ -8,11 +10,16 @@ export interface ScreenshotOptions {
   waitForSelector?: string;
 }
 
+export interface ScreenshotResult {
+  structurePath: string;
+  structure: PageStructure;
+}
+
 export async function takeScreenshot(
   url: string,
   outputPath: string,
   options: ScreenshotOptions = {}
-): Promise<void> {
+): Promise<ScreenshotResult> {
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
@@ -43,8 +50,8 @@ export async function takeScreenshot(
     await page.waitForTimeout(2000);
   }
 
+  // Ta screenshot
   if (options.selector) {
-    // Screenshota bara det valda elementet
     const element = await page.$(options.selector);
     if (element) {
       await element.screenshot({ path: outputPath });
@@ -56,6 +63,17 @@ export async function takeScreenshot(
     await page.screenshot({ path: outputPath, fullPage: false });
   }
 
+  // Extrahera strukturerad data från hela sidan (inte bara viewport)
+  const rawStructure = await extractStructure(page);
+  const structure = stripNoise(rawStructure);
+
+  // Spara som JSON bredvid screenshoten
+  const structurePath = outputPath.replace('.png', '.json');
+  fs.writeFileSync(structurePath, JSON.stringify(structure, null, 2));
+
   await browser.close();
   console.log(`Screenshot sparad: ${outputPath}`);
+  console.log(`Struktur sparad: ${structurePath} (${structure.prices.length} priser, ${structure.headings.length} rubriker, ${structure.buttons.length} knappar)`);
+
+  return { structurePath, structure };
 }
