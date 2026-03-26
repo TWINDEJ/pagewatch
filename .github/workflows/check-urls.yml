@@ -18,6 +18,14 @@ jobs:
         with:
           node-version: 20
 
+      - name: Restore screenshot cache
+        uses: actions/cache@v4
+        with:
+          path: data/screenshots
+          key: screenshots-${{ github.run_id }}
+          restore-keys: |
+            screenshots-
+
       - name: Install root dependencies
         run: npm ci
 
@@ -29,4 +37,5 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: npx ts-node engine/check-all.ts
