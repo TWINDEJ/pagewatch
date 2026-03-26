@@ -42,3 +42,4 @@ next-env.d.ts
 
 # App data
 data/
+.env*.local

@@ -1,23 +1,22 @@
-import Database from 'better-sqlite3';
-import path from 'path';
+import { createClient, type Client } from '@libsql/client';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'changebrief.db');
+let client: Client;
 
-let db: Database.Database;
-
-function getDb(): Database.Database {
-  if (!db) {
-    const fs = require('fs');
-    fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-    db = new Database(DB_PATH);
-    db.pragma('journal_mode = WAL');
-    initDb(db);
+function getDb(): Client {
+  if (!client) {
+    client = createClient({
+      url: process.env.TURSO_DATABASE_URL!,
+      authToken: process.env.TURSO_AUTH_TOKEN,
+    });
   }
-  return db;
+  return client;
 }
 
-function initDb(db: Database.Database) {
-  db.exec(`
+// ─── Schema initialization ───
+
+export async function initDb() {
+  const db = getDb();
+  await db.executeMultiple(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       email TEXT UNIQUE NOT NULL,
@@ -61,77 +60,85 @@ function initDb(db: Database.Database) {
 
 // ─── Users ───
 
-export function getOrCreateUser(email: string, name?: string, image?: string): { id: string; email: string; plan: string } {
+export async function getOrCreateUser(email: string, name?: string, image?: string) {
   const db = getDb();
-  const existing = db.prepare('SELECT * FROM users WHERE email = ?').get(email) as any;
-  if (existing) return existing;
+  await initDb();
+  const existing = await db.execute({ sql: 'SELECT * FROM users WHERE email = ?', args: [email] });
+  if (existing.rows.length > 0) return existing.rows[0];
 
   const id = crypto.randomUUID();
-  db.prepare('INSERT INTO users (id, email, name, image) VALUES (?, ?, ?, ?)').run(id, email, name, image);
+  await db.execute({ sql: 'INSERT INTO users (id, email, name, image) VALUES (?, ?, ?, ?)', args: [id, email, name ?? null, image ?? null] });
   return { id, email, plan: 'free' };
 }
 
-export function getUserByEmail(email: string) {
-  return getDb().prepare('SELECT * FROM users WHERE email = ?').get(email) as any;
+export async function getUserByEmail(email: string) {
+  const db = getDb();
+  await initDb();
+  const result = await db.execute({ sql: 'SELECT * FROM users WHERE email = ?', args: [email] });
+  return result.rows[0] ?? null;
 }
 
-export function updateUserPlan(userId: string, plan: string) {
-  getDb().prepare('UPDATE users SET plan = ? WHERE id = ?').run(plan, userId);
+export async function updateUserPlan(userId: string, plan: string) {
+  await getDb().execute({ sql: 'UPDATE users SET plan = ? WHERE id = ?', args: [plan, userId] });
 }
 
 // ─── Watched URLs ───
 
-export function getWatchedUrls(userId: string) {
-  return getDb().prepare('SELECT * FROM watched_urls WHERE user_id = ? ORDER BY created_at DESC').all(userId) as any[];
+export async function getWatchedUrls(userId: string) {
+  const result = await getDb().execute({ sql: 'SELECT * FROM watched_urls WHERE user_id = ? ORDER BY created_at DESC', args: [userId] });
+  return result.rows;
 }
 
-export function addWatchedUrl(userId: string, url: string, name: string, options?: { threshold?: number; selector?: string; mobile?: boolean; minImportance?: number }) {
-  const db = getDb();
-  db.prepare(`
-    INSERT INTO watched_urls (user_id, url, name, threshold, selector, mobile, min_importance)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `).run(
-    userId, url, name,
-    options?.threshold ?? 0.3,
-    options?.selector ?? null,
-    options?.mobile ? 1 : 0,
-    options?.minImportance ?? 5
-  );
+export async function addWatchedUrl(userId: string, url: string, name: string, options?: { threshold?: number; selector?: string; mobile?: boolean; minImportance?: number }) {
+  await getDb().execute({
+    sql: 'INSERT INTO watched_urls (user_id, url, name, threshold, selector, mobile, min_importance) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    args: [
+      userId, url, name,
+      options?.threshold ?? 0.3,
+      options?.selector ?? null,
+      options?.mobile ? 1 : 0,
+      options?.minImportance ?? 5
+    ]
+  });
 }
 
-export function removeWatchedUrl(userId: string, urlId: number) {
-  getDb().prepare('DELETE FROM watched_urls WHERE id = ? AND user_id = ?').run(urlId, userId);
+export async function removeWatchedUrl(userId: string, urlId: number) {
+  await getDb().execute({ sql: 'DELETE FROM watched_urls WHERE id = ? AND user_id = ?', args: [urlId, userId] });
 }
 
-export function countWatchedUrls(userId: string): number {
-  const row = getDb().prepare('SELECT COUNT(*) as count FROM watched_urls WHERE user_id = ?').get(userId) as any;
-  return row.count;
+export async function countWatchedUrls(userId: string): Promise<number> {
+  const result = await getDb().execute({ sql: 'SELECT COUNT(*) as count FROM watched_urls WHERE user_id = ?', args: [userId] });
+  return Number(result.rows[0].count);
+}
+
+// ─── All URLs (for cron job) ───
+
+export async function getAllActiveUrls() {
+  const result = await getDb().execute({ sql: 'SELECT wu.*, u.email, u.plan FROM watched_urls wu JOIN users u ON wu.user_id = u.id WHERE wu.active = 1', args: [] });
+  return result.rows;
 }
 
 // ─── Change History ───
 
-export function addChangeRecord(userId: string, record: {
+export async function addChangeRecord(userId: string, record: {
   url: string; name: string; changePercent: number;
   summary?: string; importance?: number; changedElements?: string[];
   hasSignificantChange?: boolean;
 }) {
-  getDb().prepare(`
-    INSERT INTO change_history (user_id, url, name, change_percent, summary, importance, changed_elements, has_significant_change)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(
-    userId, record.url, record.name, record.changePercent,
-    record.summary ?? null, record.importance ?? null,
-    record.changedElements ? JSON.stringify(record.changedElements) : null,
-    record.hasSignificantChange ? 1 : 0
-  );
+  await getDb().execute({
+    sql: 'INSERT INTO change_history (user_id, url, name, change_percent, summary, importance, changed_elements, has_significant_change) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    args: [
+      userId, record.url, record.name, record.changePercent,
+      record.summary ?? null, record.importance ?? null,
+      record.changedElements ? JSON.stringify(record.changedElements) : null,
+      record.hasSignificantChange ? 1 : 0
+    ]
+  });
 }
 
-export function getChangeHistory(userId: string, limit = 50) {
-  return getDb().prepare('SELECT * FROM change_history WHERE user_id = ? ORDER BY checked_at DESC LIMIT ?').all(userId, limit) as any[];
-}
-
-export function getChangeHistoryForUrl(userId: string, url: string, limit = 20) {
-  return getDb().prepare('SELECT * FROM change_history WHERE user_id = ? AND url = ? ORDER BY checked_at DESC LIMIT ?').all(userId, url, limit) as any[];
+export async function getChangeHistory(userId: string, limit = 50) {
+  const result = await getDb().execute({ sql: 'SELECT * FROM change_history WHERE user_id = ? ORDER BY checked_at DESC LIMIT ?', args: [userId, limit] });
+  return result.rows;
 }
 
 // ─── Plan limits ───

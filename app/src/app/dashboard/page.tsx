@@ -10,12 +10,12 @@ export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.email) redirect('/login');
 
-  const user = getUserByEmail(session.user.email);
+  const user = await getUserByEmail(session.user.email);
   if (!user) redirect('/login');
 
-  const urls = getWatchedUrls(user.id);
-  const history = getChangeHistory(user.id, 20);
-  const urlLimit = getUrlLimit(user.plan);
+  const urls = await getWatchedUrls(user.id as string) as any[];
+  const history = await getChangeHistory(user.id as string, 20) as any[];
+  const urlLimit = getUrlLimit(user.plan as string);
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">

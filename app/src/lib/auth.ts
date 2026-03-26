@@ -17,7 +17,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user }) {
       if (user.email) {
-        getOrCreateUser(user.email, user.name ?? undefined, user.image ?? undefined);
+        await getOrCreateUser(user.email, user.name ?? undefined, user.image ?? undefined);
       }
       return true;
     },
