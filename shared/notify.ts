@@ -200,9 +200,9 @@ export async function sendPagerDutyAlert(
     routing_key: routingKey,
     event_action: 'trigger',
     payload: {
-      summary: `[Pagewatch] ${name}: ${analysis.summary}`,
+      summary: `[changebrief] ${name}: ${analysis.summary}`,
       severity,
-      source: 'pagewatch',
+      source: 'changebrief',
       component: name,
       custom_details: {
         url,
@@ -246,7 +246,7 @@ export async function createJiraIssue(
     fields: {
       project: { key: projectKey },
       issuetype: { name: 'Task' },
-      summary: `[Pagewatch] Ändring på ${name} (${analysis.importance}/10)`,
+      summary: `[changebrief] Ändring på ${name} (${analysis.importance}/10)`,
       description: {
         type: 'doc',
         version: 1,
@@ -268,7 +268,7 @@ export async function createJiraIssue(
           }
         ]
       },
-      labels: ['pagewatch', `importance-${analysis.importance}`]
+      labels: ['changebrief', `importance-${analysis.importance}`]
     }
   };
 

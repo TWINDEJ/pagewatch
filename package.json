@@ -1,7 +1,7 @@
 {
   "name": "pagewatch",
   "version": "1.0.0",
-  "description": "AI-powered webpage change monitoring",
+  "description": "changebrief — AI-powered webpage change monitoring",
   "main": "index.js",
   "scripts": {
     "check": "ts-node local-test.ts",

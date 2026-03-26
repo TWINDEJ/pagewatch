@@ -1,4 +1,4 @@
-# Status — Pagewatch AI
+# Status — changebrief
 
 ## Nuvarande fas: Fas 1 (PoC) — fungerande + landing page
 
@@ -42,7 +42,7 @@
 - [x] Bygger utan fel
 
 ## Nästa steg
-- [ ] Köp domän (pagewatch.ai eller .dev)
+- [ ] Köp domän changebrief.io
 - [ ] Deploya landing page till Cloudflare Pages
 - [ ] Koppla Polar.sh för betalning
 - [ ] Cron-schemaläggning (Azure Functions)

@@ -1,4 +1,4 @@
-# Pagewatch AI
+# changebrief
 
 Bevakar webbsidor och berättar på ren svenska/engelska *vad som faktiskt ändrades* — inte bara att något ändrades.
 

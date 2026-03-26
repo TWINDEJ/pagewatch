@@ -8,7 +8,7 @@ const [,, command, ...args] = process.argv;
 
 function usage() {
   console.log(`
-Pagewatch CLI
+changebrief CLI
 
 Kommandon:
   add <url> <namn> [--selector=".pricing"] [--mobile] [--threshold=0.5]

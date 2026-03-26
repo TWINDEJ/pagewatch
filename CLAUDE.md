@@ -1,4 +1,4 @@
-# Pagewatch AI
+# changebrief
 
 ## Om projektet
 Verktyg som bevakar webbsidor och med AI (GPT-4o Vision) berättar *vad* som ändrades — inte bara att något ändrades.

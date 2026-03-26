@@ -1,4 +1,4 @@
-# Pagewatch AI — Produktspecifikation
+# changebrief — Produktspecifikation
 
 ## Problem
 Befintliga verktyg (Visualping, ChangeTower) visar suddiga screenshots med röda pixlar. Man måste själv tolka vad som ändrats.
