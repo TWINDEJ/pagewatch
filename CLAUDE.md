@@ -1,70 +1,67 @@
 # changebrief
 
 ## Om projektet
-Verktyg som bevakar webbsidor och med AI (GPT-4o Vision) berättar *vad* som ändrades — inte bara att något ändrades.
+Bevakar webbsidor och berättar med AI (GPT-4o Vision) *vad* som ändrades — inte bara att något ändrades.
 
 ## Teknikstack
-- **Node.js + TypeScript**
-- **Playwright** — headless screenshots (desktop + mobil)
-- **Pixelmatch + pngjs** — pixeljämförelse (filter innan AI-anrop)
-- **OpenAI API (gpt-4o)** — bildanalys av före/efter-screenshots
-- **dotenv** — miljövariabler
+- **Landing page:** Astro + Tailwind → Cloudflare Pages (changebrief.io)
+- **Webbapp:** Next.js (App Router) + Auth.js → Vercel (app.changebrief.io)
+- **Databas:** Turso (@libsql/client, AWS Ireland)
+- **Core engine:** Playwright + Pixelmatch + OpenAI GPT-4o Vision
+- **Cron:** GitHub Actions (var 6h)
+- **Betalning:** Polar.sh + Stripe
+- **Auth:** Google + GitHub via Auth.js (NextAuth v5)
 
 ## Projektstruktur
 ```
-shared/screenshot.ts  — Playwright-wrapper (viewport, selector, cookies, headers)
-shared/diff.ts        — Pixelmatch-wrapper
-shared/vision.ts      — OpenAI Vision API-anrop
-shared/notify.ts      — Alla notis-kanaler (Slack, Teams, Discord, PagerDuty, Jira, webhook)
-shared/integrations.ts — Central dispatcher + integrations-config
-shared/history.ts     — JSON-baserad ändringslogg
-shared/config.ts      — URL-konfiguration med per-URL settings
-shared/storage.ts     — Screenshot-arkivering med retention
-shared/report.ts      — Daglig rapport + CSV/JSON-export
-cli.ts                — CLI med add/remove/list/history/report/export/check/integrate
-local-test.ts         — Kör hela bevakningsflödet
-data/urls.json        — Bevakade URLs (med konfiguration)
-data/integrations.json — Integrationer (gitignored)
-data/history.json     — Ändringshistorik (gitignored)
-data/screenshots/     — Aktuella screenshots (gitignored)
-data/archive/         — Datumstämplade arkiv (gitignored)
-landing/              — Astro + Tailwind landing page
+landing/               — Astro landing page (Cloudflare Pages)
+app/                   — Next.js webbapp (Vercel)
+  src/lib/db.ts        — Turso-databas (async, libsql)
+  src/lib/auth.ts      — Auth.js config
+  src/app/dashboard/   — Dashboard (add/remove URLs, historik)
+  src/app/api/urls/    — REST API
+  src/app/login/       — Login-sida
+engine/                — Core engine för GitHub Actions
+  check-all.ts         — Läser URLs från Turso, screenshots, AI, skriver tillbaka
+shared/                — Delad logik
+  screenshot.ts        — Playwright (viewport, selector, cookies, headers)
+  diff.ts              — Pixelmatch
+  vision.ts            — OpenAI GPT-4o Vision
+  notify.ts            — Slack, Teams, Discord, PagerDuty, Jira, webhooks
+  integrations.ts      — Central dispatcher
+  config.ts            — URL-konfiguration
+  history.ts           — Ändringslogg
+  storage.ts           — Screenshot-arkivering
+  report.ts            — Rapport + export
+cli.ts                 — CLI-verktyg
+.github/workflows/     — GitHub Actions cron
 ```
 
 ## Köra lokalt
 ```bash
-cp .env.example .env         # Fyll i OPENAI_API_KEY
-npm run cli -- add <url> <namn>  # Lägg till URL
-npm run check                # Kör bevakning
-npm run cli -- report        # Visa rapport
+cd app && npm run dev          # Webbapp på localhost:3000
+npm run check                  # CLI: kör bevakning
+npm run cli -- list            # CLI: visa URLs
+npx ts-node engine/check-all.ts  # Engine manuellt
 ```
 
+## Deploya
+```bash
+cd landing && npm run build && npx wrangler pages deploy dist --project-name pagewatch
+cd app && npx vercel --prod --yes
+gh workflow run check-urls.yml   # Trigga cron manuellt
+```
+
+## Env vars (Vercel)
+AUTH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, AUTH_URL, TURSO_DATABASE_URL, TURSO_AUTH_TOKEN
+
+## Env vars (GitHub Secrets)
+OPENAI_API_KEY, TURSO_DATABASE_URL, TURSO_AUTH_TOKEN
+
 ## Lektioner
-- pixelmatch v7 är ESM-only, importera med `import pixelmatch from 'pixelmatch'`
-- Namn med mellanslag i CLI: samla alla non-option/non-URL args och join med ' '
-- Filtrera bort undefined vid spread för att inte skriva över defaults
-
-<!-- VERCEL BEST PRACTICES START -->
-## Best practices for developing on Vercel
-
-These defaults are optimized for AI coding agents (and humans) working on apps that deploy to Vercel.
-
-- Treat Vercel Functions as stateless + ephemeral (no durable RAM/FS, no background daemons), use Blob or marketplace integrations for preserving state
-- Edge Functions (standalone) are deprecated; prefer Vercel Functions
-- Don't start new projects on Vercel KV/Postgres (both discontinued); use Marketplace Redis/Postgres instead
-- Store secrets in Vercel Env Variables; not in git or `NEXT_PUBLIC_*`
-- Provision Marketplace native integrations with `vercel integration add` (CI/agent-friendly)
-- Sync env + project settings with `vercel env pull` / `vercel pull` when you need local/offline parity
-- Use `waitUntil` for post-response work; avoid the deprecated Function `context` parameter
-- Set Function regions near your primary data source; avoid cross-region DB/service roundtrips
-- Tune Fluid Compute knobs (e.g., `maxDuration`, memory/CPU) for long I/O-heavy calls (LLMs, APIs)
-- Use Runtime Cache for fast **regional** caching + tag invalidation (don't treat it as global KV)
-- Use Cron Jobs for schedules; cron runs in UTC and triggers your production URL via HTTP GET
-- Use Vercel Blob for uploads/media; Use Edge Config for small, globally-read config
-- If Enable Deployment Protection is enabled, use a bypass secret to directly access them
-- Add OpenTelemetry via `@vercel/otel` on Node; don't expect OTEL support on the Edge runtime
-- Enable Web Analytics + Speed Insights early
-- Use AI Gateway for model routing, set AI_GATEWAY_API_KEY, using a model string (e.g. 'anthropic/claude-sonnet-4.6'), Gateway is already default in AI SDK
-  needed. Always curl https://ai-gateway.vercel.sh/v1/models first; never trust model IDs from memory
-- For durable agent loops or untrusted code: use Workflow (pause/resume/state) + Sandbox; use Vercel MCP for secure infra access
-<!-- VERCEL BEST PRACTICES END -->
+- pixelmatch v7 är ESM-only
+- Turbopack har bugg med @libsql/client LICENSE-fil — bygg utan --turbopack
+- Turso free tier har bara AWS-locations (eu-west-1 närmast Sverige)
+- Polar kräver pris > $0 — gratis plan hanteras utan checkout
+- better-sqlite3 fungerar INTE i Vercel serverless — använd Turso/libsql
+- serverExternalPackages i next.config.ts hjälper inte med Turbopack-buggen
