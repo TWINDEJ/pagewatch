@@ -20,7 +20,7 @@ export async function extractStructure(page: Page): Promise<PageStructure> {
     // Priser — matchar $, €, £, SEK, kr följt av siffror
     const priceRegex = /(?:\$|€|£|SEK|kr\.?)\s*\d[\d\s,.]*\d?|\d[\d\s,.]*\d?\s*(?:\$|€|£|SEK|kr\.?)/gi;
     const bodyText = document.body?.textContent || '';
-    const prices = [...new Set(Array.from(bodyText.matchAll(priceRegex), m => m[0].trim()))];
+    const prices = [...new Set(Array.from(bodyText.matchAll(priceRegex), (m: RegExpMatchArray) => m[0].trim()))];
 
     // Rubriker
     const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'))
