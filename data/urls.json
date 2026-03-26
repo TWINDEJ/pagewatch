@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://example.com/pricing",
+    "name": "Example Pricing",
+    "active": true,
+    "threshold": 0.3,
+    "minImportance": 5,
+    "notifySlack": true
+  },
+  {
+    "url": "https://stripe.com/pricing",
+    "name": "Stripe Pricing",
+    "active": true,
+    "threshold": 0.3,
+    "minImportance": 5,
+    "notifySlack": true,
+    "mobile": false
+  },
+  {
+    "url": "https://github.com/pricing",
+    "name": "GitHub Pricing",
+    "active": true,
+    "threshold": 1,
+    "minImportance": 5,
+    "notifySlack": true,
+    "selector": ".pricing-card",
+    "mobile": false
+  }
+]
