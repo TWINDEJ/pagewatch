@@ -252,9 +252,9 @@ async function main() {
       // Notify user after 3 consecutive failures
       if (consecutive === 3 && row.notify_email && row.email) {
         await sendEmailNotification(
-          row.email,
-          row.name,
-          row.url,
+          row.email as string,
+          row.name as string,
+          row.url as string,
           { summary: `This page has failed 3 checks in a row: ${errorMsg}`, importance: 6, changedElements: ['Page unreachable'], hasSignificantChange: false }
         );
       }
