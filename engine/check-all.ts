@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { createClient } from '@libsql/client';
 import { takeScreenshot } from '../shared/screenshot';
 import { compareScreenshots, compareStructured } from '../shared/diff';
-import { analyzeChange, shouldAnalyze } from '../shared/vision';
+import { analyzeChange, shouldAnalyze, getSessionUsage } from '../shared/vision';
 import { sendEmailNotification, sendSlackNotification, sendWebhookNotification } from '../shared/notify';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -349,6 +349,15 @@ async function main() {
 
   // Clean up old history based on plan retention
   await cleanupOldHistory();
+
+  // OpenAI-kostnadssammanfattning
+  const usage = getSessionUsage();
+  if (usage.calls > 0) {
+    console.log(`\nOpenAI usage: ${usage.calls} API calls, ${usage.totalTokens.toLocaleString()} tokens, ~$${usage.estimatedCostUsd.toFixed(4)}`);
+    for (const u of usage.breakdown) {
+      console.log(`  ${u.model}: ${u.promptTokens + u.completionTokens} tokens (~$${u.estimatedCostUsd.toFixed(4)})`);
+    }
+  }
 
   console.log('\nDone!');
 }

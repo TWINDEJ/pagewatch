@@ -4,6 +4,39 @@ import type { StructuredDiffResult } from './diff';
 
 const client = new OpenAI();
 
+// Kostnadsberäkning per modell (USD per 1M tokens, 2026-03 priser)
+const MODEL_COSTS: Record<string, { input: number; output: number }> = {
+  'gpt-4o': { input: 2.50, output: 10.00 },
+  'gpt-4o-mini': { input: 0.15, output: 0.60 },
+};
+
+export interface UsageStats {
+  model: string;
+  promptTokens: number;
+  completionTokens: number;
+  estimatedCostUsd: number;
+}
+
+// Ackumulerad kostnad per körning
+let sessionUsage: UsageStats[] = [];
+
+function trackUsage(model: string, usage: { prompt_tokens?: number; completion_tokens?: number } | undefined) {
+  if (!usage) return;
+  const costs = MODEL_COSTS[model] || MODEL_COSTS['gpt-4o'];
+  const prompt = usage.prompt_tokens ?? 0;
+  const completion = usage.completion_tokens ?? 0;
+  const cost = (prompt * costs.input + completion * costs.output) / 1_000_000;
+  sessionUsage.push({ model, promptTokens: prompt, completionTokens: completion, estimatedCostUsd: cost });
+}
+
+export function getSessionUsage(): { calls: number; totalTokens: number; estimatedCostUsd: number; breakdown: UsageStats[] } {
+  const totalTokens = sessionUsage.reduce((sum, u) => sum + u.promptTokens + u.completionTokens, 0);
+  const estimatedCostUsd = sessionUsage.reduce((sum, u) => sum + u.estimatedCostUsd, 0);
+  return { calls: sessionUsage.length, totalTokens, estimatedCostUsd, breakdown: sessionUsage };
+}
+
+export function resetSessionUsage() { sessionUsage = []; }
+
 export interface ChangeAnalysis {
   summary: string;
   importance: number; // 1-10
@@ -50,6 +83,7 @@ export async function shouldAnalyze(diff: StructuredDiffResult): Promise<boolean
         content: `A web page monitoring tool detected these changes:\n\n${diff.summary}\n\nIs this worth a detailed analysis? Changes to pricing, features, terms, or product offerings are worth it. Minor text tweaks, timestamp updates, or cosmetic changes are not.\n\nReply only YES or NO.`
       }]
     });
+    trackUsage('gpt-4o-mini', response.usage);
     const answer = (response.choices[0]?.message?.content || '').trim().toUpperCase();
     console.log(`  → GPT-4o-mini filter: ${answer}`);
     return answer.startsWith('YES');
@@ -145,6 +179,7 @@ Om bilderna ser likadana ut, sätt hasSignificantChange: false och importance: 1
     }]
   });
 
+  trackUsage('gpt-4o', response.usage);
   const text = response.choices[0]?.message?.content || '';
 
   try {

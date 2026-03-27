@@ -46,14 +46,14 @@ export async function POST(req: NextRequest) {
     const body = await req.text();
     const secret = process.env.POLAR_WEBHOOK_SECRET;
 
-    // TODO: Implementera signaturverifiering korrekt för Polar Standard Webhooks
-    // Polar's secret format (polar_whs_) + Standard Webhooks signering behöver utredas
-    // if (secret) {
-    //   if (!verifyStandardWebhook(body, req.headers, secret)) {
-    //     console.error('Polar webhook: invalid signature');
-    //     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-    //   }
-    // }
+    if (secret) {
+      if (!verifyStandardWebhook(body, req.headers, secret)) {
+        console.error('Polar webhook: invalid signature');
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+      }
+    } else {
+      console.warn('Polar webhook: POLAR_WEBHOOK_SECRET not set, skipping signature verification');
+    }
 
     const event = JSON.parse(body);
     const type = event.type as string;
