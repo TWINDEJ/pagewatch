@@ -175,6 +175,7 @@ async function sendDigestEmail(email: string, html: string, changeCount: number)
     },
     body: JSON.stringify({
       from: 'changebrief <digest@changebrief.io>',
+      reply_to: 'kristian@changebrief.io',
       to: [email],
       subject,
       html,

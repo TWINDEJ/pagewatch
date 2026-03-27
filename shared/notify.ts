@@ -56,6 +56,7 @@ export async function sendEmailNotification(
     },
     body: JSON.stringify({
       from: 'changebrief <notifications@changebrief.io>',
+      reply_to: 'kristian@changebrief.io',
       to: [to],
       subject: `${emoji} ${name}: ${analysis.summary}`,
       html,
