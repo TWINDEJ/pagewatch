@@ -53,6 +53,7 @@ export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: stri
   const { locale, t } = useLocale();
   const [adding, setAdding] = useState<string | null>(null);
   const [added, setAdded] = useState<Set<string>>(new Set());
+  const [justAdded, setJustAdded] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const router = useRouter();
@@ -68,7 +69,8 @@ export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: stri
         body: JSON.stringify({ url: s.url, name: locale === 'sv' ? s.name_sv : s.name, category: s.category }),
       });
       if (res.ok) {
-        setAdded(prev => new Set(prev).add(s.url));
+        setJustAdded(s.url);
+        setTimeout(() => { setAdded(prev => new Set(prev).add(s.url)); setJustAdded(null); }, 600);
         show(`${t('watchlists.added')} "${locale === 'sv' ? s.name_sv : s.name}"`, 'success');
         router.refresh();
       } else { const data = await res.json(); show(data.error || 'Failed', 'error'); }
@@ -77,8 +79,8 @@ export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: stri
   }, [canAdd, locale, router, show, t]);
 
   const filtered = activeCategory ? suggestions.filter(s => s.category === activeCategory) : suggestions;
-  const visible = expanded ? filtered : filtered.slice(0, 6);
-  const hasMore = filtered.length > 6;
+  const visible = expanded ? filtered : filtered.slice(0, 12);
+  const hasMore = filtered.length > 12;
 
   return (
     <>
@@ -104,8 +106,10 @@ export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: stri
             const displayName = locale === 'sv' ? s.name_sv : s.name;
             const displayDesc = locale === 'sv' ? s.description_sv : s.description;
 
+            const isJustAdded = justAdded === s.url;
+
             return (
-              <div key={s.url} className="flex items-start justify-between gap-3 rounded-xl glass-card p-4">
+              <div key={s.url} className={`flex items-start justify-between gap-3 rounded-xl glass-card p-4 transition-all duration-500 ${isJustAdded ? 'scale-95 opacity-50 ring-2 ring-emerald-500/40' : ''}`}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`flex h-6 w-6 items-center justify-center rounded-md ${colors}`}>{categoryIcons[s.category]}</span>
@@ -125,7 +129,7 @@ export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: stri
         {hasMore && (
           <button onClick={() => setExpanded(!expanded)}
             className="cursor-pointer flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-blue-400 transition-colors duration-200">
-            {expanded ? t('watchlists.showLess') : `${t('watchlists.showAll')} ${suggestions.length} ${t('watchlists.suggestions')}`}
+            {expanded ? t('watchlists.showLess') : `${t('watchlists.showAll')} ${filtered.length} ${t('watchlists.suggestions')}`}
             <svg className={`h-3.5 w-3.5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
           </button>

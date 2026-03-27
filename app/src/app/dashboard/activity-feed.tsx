@@ -14,7 +14,7 @@ interface ChangeEntry {
   checked_at: string;
 }
 
-type Filter = 'all' | 'high' | 'medium';
+type Filter = 'all' | 'high' | 'medium' | 'significant';
 
 function ImportanceDot({ importance }: { importance: number | null }) {
   if (importance == null || importance <= 0) {
@@ -32,7 +32,7 @@ function ImportanceDot({ importance }: { importance: number | null }) {
 export function ActivityFeed({ history: initialHistory, plan = 'free' }: { history: ChangeEntry[]; plan?: string }) {
   const { t, locale } = useLocale();
   const [history, setHistory] = useState(initialHistory);
-  const [filter, setFilter] = useState<Filter>('all');
+  const [filter, setFilter] = useState<Filter>('significant');
   const [urlFilter, setUrlFilter] = useState<string>('');
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -45,6 +45,7 @@ export function ActivityFeed({ history: initialHistory, plan = 'free' }: { histo
 
   const filtered = useMemo(() => {
     let items = history;
+    if (filter === 'significant') items = items.filter((e) => e.summary != null);
     if (filter === 'high') items = items.filter((e) => (e.importance ?? 0) >= 7);
     if (filter === 'medium') items = items.filter((e) => {
       const imp = e.importance ?? 0;
@@ -101,6 +102,9 @@ export function ActivityFeed({ history: initialHistory, plan = 'free' }: { histo
     <div className="space-y-3">
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2">
+        <button onClick={() => setFilter('significant')} className={filterBtnCls(filter === 'significant')}>
+          {locale === 'sv' ? 'Ändringar' : 'Changes'}
+        </button>
         <button onClick={() => setFilter('all')} className={filterBtnCls(filter === 'all')}>
           {t('feed.all')}
         </button>

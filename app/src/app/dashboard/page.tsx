@@ -142,10 +142,29 @@ export default async function DashboardPage({
           </section>
         )}
 
-        {/* 3. Activity Feed */}
+        {/* 3. Activity Feed + Settings gear */}
         {urls.length > 0 && (
           <section>
-            <h2 className="text-lg font-semibold text-white/90 mb-1">{t('feed.title', locale)}</h2>
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="text-lg font-semibold text-white/90">{t('feed.title', locale)}</h2>
+              <details className="relative group">
+                <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 transition-all duration-200">
+                  <svg className="h-5 w-5 transition-transform duration-300 group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </summary>
+                <div className="absolute right-0 top-10 z-20 w-80 rounded-2xl glass-card p-4 sm:p-5 shadow-2xl shadow-black/40 animate-fade-in">
+                  <SettingsForm
+                    initialNotifyEmail={user.notify_email !== 0}
+                    initialSlackWebhookUrl={(user.slack_webhook_url as string) || ''}
+                    initialWeeklyDigest={user.weekly_digest !== 0}
+                    initialDigestFrequency={(user.digest_frequency as string) || 'weekly'}
+                    plan={user.plan as string}
+                  />
+                </div>
+              </details>
+            </div>
             <p className="text-sm text-slate-500 mb-4">{t('feed.desc', locale)}</p>
             <ActivityFeed history={history} plan={user.plan as string} />
           </section>
@@ -190,27 +209,7 @@ export default async function DashboardPage({
           />
         </section>
 
-        {/* 6. Settings (collapsed) */}
-        <section>
-          <details className="group">
-            <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden mb-1">
-              <h2 className="text-lg font-semibold text-white/90">{t('dashboard.settings', locale)}</h2>
-              <svg className="h-5 w-5 text-slate-600 transition-transform duration-200 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </summary>
-            <p className="text-sm text-slate-500 mb-4">{t('dashboard.settings.desc', locale)}</p>
-            <div className="rounded-2xl glass-card p-4 sm:p-6">
-              <SettingsForm
-                initialNotifyEmail={user.notify_email !== 0}
-                initialSlackWebhookUrl={(user.slack_webhook_url as string) || ''}
-                initialWeeklyDigest={user.weekly_digest !== 0}
-                initialDigestFrequency={(user.digest_frequency as string) || 'weekly'}
-                plan={user.plan as string}
-              />
-            </div>
-          </details>
-        </section>
+        {/* Settings moved to gear icon in Activity header */}
       </main>
     </div>
   );

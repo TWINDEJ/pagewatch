@@ -38,11 +38,12 @@ function useTimeAgo() {
 }
 
 export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const router = useRouter();
   const [removing, setRemoving] = useState<number | null>(null);
   const [muting, setMuting] = useState<number | null>(null);
   const [sort, setSort] = useState<SortKey>('name');
+  const [expandedId, setExpandedId] = useState<number | null>(null);
   const { toast, show, clear } = useToast();
   const timeAgo = useTimeAgo();
 
@@ -153,10 +154,13 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
                   ? 'bg-green-500'
                   : 'bg-slate-600';
 
+          const isExpanded = expandedId === u.id;
+
           return (
             <div
               key={u.id}
-              className={`rounded-xl glass-card p-4 flex flex-col gap-2 ${isMuted ? 'opacity-50' : ''}`}
+              className={`rounded-xl glass-card p-4 flex flex-col gap-2 cursor-pointer transition-all duration-300 ${isMuted ? 'opacity-50' : ''} ${isExpanded ? 'ring-1 ring-blue-500/20 sm:col-span-2' : 'hover:bg-white/[0.02]'}`}
+              onClick={() => setExpandedId(isExpanded ? null : u.id)}
             >
               {/* Top row: status + name + actions */}
               <div className="flex items-start justify-between gap-2">
@@ -173,9 +177,12 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
+                  <svg className={`h-3.5 w-3.5 text-slate-600 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                   {/* Mute toggle */}
                   <button
-                    onClick={() => handleMute(u.id, u.name, !isMuted)}
+                    onClick={(e) => { e.stopPropagation(); handleMute(u.id, u.name, !isMuted); }}
                     disabled={muting === u.id}
                     title={isMuted ? t('monitor.unmute') : t('monitor.mute')}
                     className="cursor-pointer p-1 text-slate-600 transition hover:text-blue-400 disabled:opacity-30"
@@ -198,7 +205,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
                   </button>
                   {/* Delete */}
                   <button
-                    onClick={() => handleRemove(u.id, u.name)}
+                    onClick={(e) => { e.stopPropagation(); handleRemove(u.id, u.name); }}
                     disabled={removing === u.id}
                     className="cursor-pointer p-1 text-slate-600 transition hover:text-red-400 disabled:opacity-30"
                   >
@@ -255,7 +262,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
 
               {/* Last change summary */}
               {u.last_summary && !hasError && !isMuted && (
-                <p className="text-xs text-slate-400 leading-relaxed line-clamp-1">{u.last_summary}</p>
+                <p className={`text-xs text-slate-400 leading-relaxed ${isExpanded ? '' : 'line-clamp-1'}`}>{u.last_summary}</p>
               )}
               {!u.last_summary && u.last_checked_at && !hasError && !isMuted && (
                 <p className="text-xs text-slate-600 flex items-center gap-1.5">
@@ -264,6 +271,36 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
                   </svg>
                   {t('urls.nochanges')}
                 </p>
+              )}
+
+              {/* Expanded details */}
+              {isExpanded && (
+                <div className="mt-2 pt-3 border-t border-white/5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs animate-fade-in">
+                  <div>
+                    <span className="text-slate-600 block">{locale === 'sv' ? 'Tröskel' : 'Threshold'}</span>
+                    <span className="text-slate-400">{u.threshold}%</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-600 block">{locale === 'sv' ? 'Min. vikt' : 'Min. importance'}</span>
+                    <span className="text-slate-400">{(u as any).min_importance ?? 5}/10</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-600 block">{locale === 'sv' ? 'Viewport' : 'Viewport'}</span>
+                    <span className="text-slate-400">{u.mobile ? 'Mobile' : 'Desktop'}</span>
+                  </div>
+                  {u.last_importance != null && u.last_importance > 0 && (
+                    <div>
+                      <span className="text-slate-600 block">{locale === 'sv' ? 'Senaste vikt' : 'Last importance'}</span>
+                      <span className={`font-medium ${u.last_importance >= 7 ? 'text-red-400' : u.last_importance >= 4 ? 'text-orange-400' : 'text-green-400'}`}>{u.last_importance}/10</span>
+                    </div>
+                  )}
+                  <div className="col-span-2 sm:col-span-4">
+                    <a href={u.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
+                      className="text-blue-400/70 hover:text-blue-300 transition break-all">
+                      {u.url}
+                    </a>
+                  </div>
+                </div>
               )}
             </div>
           );
