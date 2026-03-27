@@ -89,6 +89,45 @@ const translations = {
   'time.mAgo': { en: 'm ago', sv: 'm sedan' },
   'time.hAgo': { en: 'h ago', sv: 'h sedan' },
   'time.dAgo': { en: 'd ago', sv: 'd sedan' },
+
+  // ─── Activity Feed ───
+  'feed.title': { en: 'Activity', sv: 'Aktivitet' },
+  'feed.desc': { en: 'Change log for your monitored pages', sv: 'Ändringslogg för dina bevakade sidor' },
+  'feed.all': { en: 'All', sv: 'Alla' },
+  'feed.high': { en: 'High', sv: 'Hög' },
+  'feed.medium': { en: 'Medium', sv: 'Medel' },
+  'feed.filter.url': { en: 'Filter by page', sv: 'Filtrera på sida' },
+
+  // ─── Monitored Pages ───
+  'monitor.title': { en: 'Monitored pages', sv: 'Bevakade sidor' },
+  'monitor.sort.name': { en: 'Name', sv: 'Namn' },
+  'monitor.sort.changed': { en: 'Last changed', sv: 'Senast ändrad' },
+  'monitor.sort.importance': { en: 'Importance', sv: 'Prioritet' },
+  'monitor.muted': { en: 'Paused', sv: 'Pausad' },
+  'monitor.mute': { en: 'Pause monitoring', sv: 'Pausa bevakning' },
+  'monitor.unmute': { en: 'Resume monitoring', sv: 'Återuppta bevakning' },
+
+  // ─── Discover ───
+  'discover.title': { en: 'Discover', sv: 'Upptäck' },
+  'discover.desc': { en: 'Popular pages that teams monitor. Add with one click.', sv: 'Populära sidor som team bevakar. Lägg till med ett klick.' },
+
+  // ─── Export ───
+  'export.csv': { en: 'Export CSV', sv: 'Exportera CSV' },
+  'export.pro': { en: 'Pro feature', sv: 'Pro-funktion' },
+
+  // ─── Digest settings ───
+  'settings.digest.weekly': { en: 'Weekly (Fridays)', sv: 'Veckovis (fredagar)' },
+  'settings.digest.daily': { en: 'Daily', sv: 'Dagligen' },
+  'settings.digest.off': { en: 'Off', sv: 'Av' },
+  'settings.digest.pro': { en: 'Daily digest is a Pro feature', sv: 'Daglig rapport är en Pro-funktion' },
+
+  // ─── Webhook ───
+  'form.webhook': { en: 'Webhook URL', sv: 'Webhook-URL' },
+  'form.webhook.help': { en: 'We POST a JSON payload when this page changes.', sv: 'Vi skickar JSON via POST när sidan ändras.' },
+  'form.webhook.pro': { en: 'Webhooks are a Pro feature', sv: 'Webhooks är en Pro-funktion' },
+
+  // ─── Checkout ───
+  'checkout.success': { en: 'Plan upgraded! Welcome aboard.', sv: 'Plan uppgraderad! Välkommen ombord.' },
 } as const;
 
 export type TranslationKey = keyof typeof translations;

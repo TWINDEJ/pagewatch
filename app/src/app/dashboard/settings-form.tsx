@@ -7,15 +7,20 @@ interface SettingsProps {
   initialNotifyEmail: boolean;
   initialSlackWebhookUrl: string;
   initialWeeklyDigest: boolean;
+  initialDigestFrequency: string;
+  plan: string;
 }
 
-export function SettingsForm({ initialNotifyEmail, initialSlackWebhookUrl, initialWeeklyDigest }: SettingsProps) {
+export function SettingsForm({ initialNotifyEmail, initialSlackWebhookUrl, initialWeeklyDigest: _initialWeeklyDigest, initialDigestFrequency, plan }: SettingsProps) {
   const { t } = useLocale();
   const [notifyEmail, setNotifyEmail] = useState(initialNotifyEmail);
-  const [weeklyDigest, setWeeklyDigest] = useState(initialWeeklyDigest);
+  const [digestFrequency, setDigestFrequency] = useState(initialDigestFrequency || 'weekly');
   const [slackWebhookUrl, setSlackWebhookUrl] = useState(initialSlackWebhookUrl);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  // Derive weeklyDigest from frequency for backwards compatibility
+  const weeklyDigest = digestFrequency === 'weekly' || digestFrequency === 'daily';
 
   async function handleSave() {
     setSaving(true);
@@ -23,7 +28,7 @@ export function SettingsForm({ initialNotifyEmail, initialSlackWebhookUrl, initi
     await fetch('/api/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ notifyEmail, slackWebhookUrl, weeklyDigest }),
+      body: JSON.stringify({ notifyEmail, slackWebhookUrl, weeklyDigest, digestFrequency }),
     });
     setSaving(false);
     setSaved(true);
@@ -46,18 +51,45 @@ export function SettingsForm({ initialNotifyEmail, initialSlackWebhookUrl, initi
         </button>
       </div>
 
-      {/* Weekly digest */}
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-white">{t('settings.digest')}</p>
-          <p className="text-xs text-slate-500">{t('settings.digest.desc')}</p>
-        </div>
-        <button
-          onClick={() => setWeeklyDigest(!weeklyDigest)}
-          className={`relative h-6 w-11 cursor-pointer rounded-full transition ${weeklyDigest ? 'bg-blue-600' : 'bg-slate-700'}`}
-        >
-          <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition ${weeklyDigest ? 'translate-x-5' : ''}`} />
-        </button>
+      {/* Digest frequency */}
+      <div>
+        <p className="text-sm font-medium text-white mb-1">{t('settings.digest')}</p>
+        {plan === 'free' ? (
+          <>
+            <p className="text-xs text-slate-500 mb-2">{t('settings.digest.desc')}</p>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-slate-400">{t('settings.digest.weekly')}</span>
+              <button
+                onClick={() => setDigestFrequency(digestFrequency === 'weekly' ? 'off' : 'weekly')}
+                className={`relative h-6 w-11 cursor-pointer rounded-full transition ${digestFrequency === 'weekly' ? 'bg-blue-600' : 'bg-slate-700'}`}
+              >
+                <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition ${digestFrequency === 'weekly' ? 'translate-x-5' : ''}`} />
+              </button>
+            </div>
+            <p className="text-xs text-slate-600 mt-2">{t('settings.digest.pro')}</p>
+          </>
+        ) : (
+          <>
+            <p className="text-xs text-slate-500 mb-2">{t('settings.digest.desc')}</p>
+            <div className="flex gap-3">
+              {(['weekly', 'daily', 'off'] as const).map((freq) => (
+                <label key={freq} className="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="digestFrequency"
+                    value={freq}
+                    checked={digestFrequency === freq}
+                    onChange={() => setDigestFrequency(freq)}
+                    className="accent-blue-500"
+                  />
+                  <span className="text-sm text-slate-300">
+                    {freq === 'weekly' ? t('settings.digest.weekly') : freq === 'daily' ? t('settings.digest.daily') : t('settings.digest.off')}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Slack */}

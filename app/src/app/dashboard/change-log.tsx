@@ -45,9 +45,21 @@ function ImportanceBadge({ importance }: { importance: number | null }) {
   return <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-xs font-medium ${color}`}>{importance}/10</span>;
 }
 
-export function ChangeLog({ history }: { history: ChangeEntry[] }) {
+export function ChangeLog({ history: initialHistory }: { history: ChangeEntry[] }) {
   const { t, locale } = useLocale();
+  const [history, setHistory] = useState(initialHistory);
   const [expandedPages, setExpandedPages] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  const deleteGroup = async (url: string) => {
+    if (!confirm(locale === 'sv' ? `Ta bort all historik för denna sida?` : `Delete all history for this page?`)) return;
+    setDeleting(url);
+    const res = await fetch(`/api/history?url=${encodeURIComponent(url)}`, { method: 'DELETE' });
+    if (res.ok) {
+      setHistory(prev => prev.filter(e => e.url !== url));
+    }
+    setDeleting(null);
+  };
 
   const togglePage = (url: string) => {
     setExpandedPages(prev => {
@@ -145,10 +157,19 @@ export function ChangeLog({ history }: { history: ChangeEntry[] }) {
                     </div>
                   );
                 })}
-                <div className="px-5 py-2 bg-white/[0.01]">
+                <div className="px-5 py-2 bg-white/[0.01] flex items-center justify-between">
                   <a href={group.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400/70 hover:text-blue-300 transition">
                     {group.url} &rarr;
                   </a>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteGroup(group.url); }}
+                    disabled={deleting === group.url}
+                    className="text-xs text-slate-600 hover:text-red-400 transition cursor-pointer disabled:opacity-50"
+                  >
+                    {deleting === group.url
+                      ? (locale === 'sv' ? 'Tar bort...' : 'Deleting...')
+                      : (locale === 'sv' ? 'Ta bort historik' : 'Delete history')}
+                  </button>
                 </div>
               </div>
             )}

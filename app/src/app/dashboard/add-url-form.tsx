@@ -78,7 +78,7 @@ function HeaderFields({ headers, onChange }: { headers: HeaderRow[]; onChange: (
   );
 }
 
-export function AddUrlForm({ canAdd }: { canAdd: boolean }) {
+export function AddUrlForm({ canAdd, plan = 'free' }: { canAdd: boolean; plan?: string }) {
   const { t } = useLocale();
   const [url, setUrl] = useState('');
   const [name, setName] = useState('');
@@ -86,6 +86,7 @@ export function AddUrlForm({ canAdd }: { canAdd: boolean }) {
   const [selector, setSelector] = useState('');
   const [cookies, setCookies] = useState<CookieRow[]>([]);
   const [headers, setHeaders] = useState<HeaderRow[]>([]);
+  const [webhookUrl, setWebhookUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { toast, show, clear } = useToast();
@@ -110,12 +111,13 @@ export function AddUrlForm({ canAdd }: { canAdd: boolean }) {
           selector: selector || undefined,
           cookies: validCookies.length > 0 ? JSON.stringify(validCookies) : undefined,
           headers: headersObj ? JSON.stringify(headersObj) : undefined,
+          webhookUrl: webhookUrl || undefined,
         }),
       });
 
       if (res.ok) {
         show(t('form.success'), 'success');
-        setUrl(''); setName(''); setSelector(''); setCookies([]); setHeaders([]);
+        setUrl(''); setName(''); setSelector(''); setCookies([]); setHeaders([]); setWebhookUrl('');
         setShowAdvanced(false);
         router.refresh();
       } else {
@@ -124,7 +126,7 @@ export function AddUrlForm({ canAdd }: { canAdd: boolean }) {
       }
     } catch { show('Network error', 'error'); }
     setLoading(false);
-  }, [url, name, selector, cookies, headers, router, show, t]);
+  }, [url, name, selector, cookies, headers, webhookUrl, router, show, t]);
 
   if (!canAdd) {
     return (
@@ -168,6 +170,24 @@ export function AddUrlForm({ canAdd }: { canAdd: boolean }) {
             </div>
             <CookieFields cookies={cookies} onChange={setCookies} />
             <HeaderFields headers={headers} onChange={setHeaders} />
+            {(plan === 'pro' || plan === 'team') ? (
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">{t('form.webhook')}</label>
+                <input
+                  type="url"
+                  placeholder="https://your-app.com/webhook"
+                  value={webhookUrl}
+                  onChange={(e) => setWebhookUrl(e.target.value)}
+                  className="w-full rounded-lg glass px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none"
+                />
+                <p className="mt-1 text-xs text-slate-600">{t('form.webhook.help')}</p>
+              </div>
+            ) : (
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">{t('form.webhook')}</label>
+                <p className="text-xs text-slate-600">{t('form.webhook.pro')}</p>
+              </div>
+            )}
           </div>
         )}
       </form>

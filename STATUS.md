@@ -27,7 +27,9 @@
 - [x] Dashboard: stats-bar, grupperad change log, inline-ändringar i URL-kort
 - [x] Auth: Google + GitHub login
 - [x] Landing page: 6 use cases, ingen modell-referens, konsekvent branding
-- [x] Polar webhook → auto-uppdatera plan vid köp/avslut
+- [x] Polar webhook → auto-uppdatera plan vid köp/avslut (verifierad 2026-03-27)
+- [x] Resend e-postnotiser (verifierad 2026-03-27)
+- [x] Upgrade-knapp i dashboard (Pro/Team via Polar checkout)
 - [x] Notification settings UI (email, Slack, weekly digest)
 - [x] Popular watchlists (31 förslag, 7 kategorier)
 - [x] Felhantering: last_checked, last_error, consecutive_errors
@@ -46,9 +48,11 @@
 - [x] Lägga till RESEND_API_KEY som GitHub Secret + Vercel env
 - [x] Konfigurera Polar webhook URL i dashboard.polar.sh
 - [x] POLAR_WEBHOOK_SECRET tillagd i Vercel env
-- [ ] E2E-test: incognito login → add URL → trigga check-urls.yml → verifiera mejl
+- [x] E2E-test: mejlnotis fungerar (2026-03-27, "Email sent to thewigander@gmail.com")
+- [x] Testköp via Polar (100%-rabattkod TEST100, webhook 200 OK, plan → Pro)
+- [x] Upgrade-knapp i dashboard header
 - [ ] E2E-test: trigga weekly-digest.yml → verifiera digest-mejl
-- [ ] Testköp via Polar sandbox (kort 4242 4242 4242 4242)
+- [ ] Implementera webhook-signaturverifiering (tillfälligt avaktiverad)
 - [ ] Kolla OpenAI-kostnad efter ett par dagars körningar
 
 ## Kvar att bygga (framtida)

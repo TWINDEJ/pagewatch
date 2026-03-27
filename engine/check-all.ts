@@ -3,7 +3,7 @@ import { createClient } from '@libsql/client';
 import { takeScreenshot } from '../shared/screenshot';
 import { compareScreenshots, compareStructured } from '../shared/diff';
 import { analyzeChange, shouldAnalyze } from '../shared/vision';
-import { sendEmailNotification, sendSlackNotification } from '../shared/notify';
+import { sendEmailNotification, sendSlackNotification, sendWebhookNotification } from '../shared/notify';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -65,6 +65,11 @@ async function initSchema() {
     'ALTER TABLE watched_urls ADD COLUMN cookies TEXT',
     'ALTER TABLE watched_urls ADD COLUMN headers TEXT',
     'ALTER TABLE users ADD COLUMN weekly_digest INTEGER DEFAULT 1',
+    'ALTER TABLE watched_urls ADD COLUMN muted INTEGER DEFAULT 0',
+    'ALTER TABLE users ADD COLUMN checks_this_month INTEGER DEFAULT 0',
+    'ALTER TABLE users ADD COLUMN checks_month TEXT',
+    'ALTER TABLE users ADD COLUMN digest_frequency TEXT DEFAULT \'weekly\'',
+    'ALTER TABLE watched_urls ADD COLUMN webhook_url TEXT',
   ]) {
     try { await db.execute(col); } catch { /* already exists */ }
   }
@@ -91,12 +96,78 @@ async function sendNotifications(row: any, analysis: any, diffPercent: number) {
     promises.push(sendSlackNotification(slack_webhook_url, url, name, analysis, diffPercent));
   }
 
+  // Per-URL webhook notification
+  if (row.webhook_url) {
+    promises.push(sendWebhookNotification(row.webhook_url as string, url, name, analysis, diffPercent));
+  }
+
   if (promises.length > 0) {
     const results = await Promise.allSettled(promises);
     for (const result of results) {
       if (result.status === 'rejected') {
         console.error(`  → Notification failed: ${result.reason}`);
       }
+    }
+  }
+}
+
+// ─── Monthly check limits ───
+
+function getCheckLimit(plan: string): number {
+  switch (plan) {
+    case 'pro': return 2000;
+    case 'team': return 10000;
+    default: return 100;
+  }
+}
+
+async function getAndIncrementCheckCount(userId: string, plan: string): Promise<{ allowed: boolean }> {
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const result = await db.execute({
+    sql: 'SELECT checks_this_month, checks_month FROM users WHERE id = ?',
+    args: [userId],
+  });
+  const row = result.rows[0];
+  if (!row) return { allowed: false };
+
+  let count = Number(row.checks_this_month) || 0;
+
+  // Reset if month changed
+  if (row.checks_month !== currentMonth) {
+    count = 0;
+  }
+
+  const limit = getCheckLimit(plan);
+  if (count >= limit) {
+    return { allowed: false };
+  }
+
+  await db.execute({
+    sql: `UPDATE users SET checks_this_month = CASE WHEN checks_month = ? THEN checks_this_month + 1 ELSE 1 END, checks_month = ? WHERE id = ?`,
+    args: [currentMonth, currentMonth, userId],
+  });
+
+  return { allowed: true };
+}
+
+// ─── History retention cleanup ───
+
+async function cleanupOldHistory() {
+  console.log('\nCleaning up old history...');
+
+  const plans: Array<{ plan: string; offset: string }> = [
+    { plan: 'free', offset: '-7 days' },
+    { plan: 'pro', offset: '-90 days' },
+    { plan: 'team', offset: '-365 days' },
+  ];
+
+  for (const { plan, offset } of plans) {
+    const result = await db.execute({
+      sql: `DELETE FROM change_history WHERE user_id IN (SELECT id FROM users WHERE plan = ?) AND checked_at < datetime('now', ?)`,
+      args: [plan, offset],
+    });
+    if (result.rowsAffected > 0) {
+      console.log(`  → Deleted ${result.rowsAffected} old entries for ${plan} plan`);
     }
   }
 }
@@ -224,7 +295,7 @@ async function main() {
   await initSchema();
 
   const result = await db.execute({
-    sql: 'SELECT wu.*, u.email, u.plan, u.notify_email, u.slack_webhook_url FROM watched_urls wu JOIN users u ON wu.user_id = u.id WHERE wu.active = 1',
+    sql: 'SELECT wu.*, u.email, u.plan, u.notify_email, u.slack_webhook_url FROM watched_urls wu JOIN users u ON wu.user_id = u.id WHERE wu.active = 1 AND (wu.muted IS NULL OR wu.muted = 0)',
     args: []
   });
 
@@ -237,6 +308,13 @@ async function main() {
 
   for (const row of result.rows) {
     try {
+      // Check monthly limit before processing
+      const { allowed } = await getAndIncrementCheckCount(row.user_id as string, (row.plan as string) || 'free');
+      if (!allowed) {
+        console.log(`\n→ Monthly check limit reached for user ${row.email}, skipping`);
+        continue;
+      }
+
       await checkUrl(row);
     } catch (err: any) {
       const errorMsg = err.message || String(err);
@@ -260,6 +338,9 @@ async function main() {
       }
     }
   }
+
+  // Clean up old history based on plan retention
+  await cleanupOldHistory();
 
   console.log('\nDone!');
 }

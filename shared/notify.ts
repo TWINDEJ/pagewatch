@@ -245,6 +245,32 @@ export async function createJiraIssue(
   else { const data = await response.json() as { key: string }; console.log(`  → Jira issue created: ${data.key}`); }
 }
 
+// ─── Per-URL Webhook (Pro+ feature) ───
+
+export async function sendWebhookNotification(
+  webhookUrl: string, url: string, name: string, analysis: ChangeAnalysis, diffPercent: number
+): Promise<void> {
+  const payload = {
+    event: 'change.detected',
+    url, name,
+    summary: analysis.summary,
+    importance: analysis.importance,
+    changedElements: analysis.changedElements,
+    changePercent: diffPercent,
+    timestamp: new Date().toISOString(),
+  };
+  const response = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'User-Agent': 'changebrief/1.0' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    console.error(`  → Webhook failed: ${response.status} ${webhookUrl}`);
+  } else {
+    console.log(`  → Webhook sent to ${webhookUrl}`);
+  }
+}
+
 // ─── Generic Webhook ───
 
 export async function sendGenericWebhook(

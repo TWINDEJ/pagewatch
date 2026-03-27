@@ -5,11 +5,12 @@ import { getUserByEmail, getWatchedUrls, getChangeHistory, getUrlLimit, getDashb
 import { t, type Locale } from '@/lib/i18n';
 import { Onboarding } from './onboarding';
 import { AddUrlForm } from './add-url-form';
-import { UrlList } from './url-list';
-import { ChangeLog } from './change-log';
+import { MonitoredGrid } from './monitored-grid';
+import { ActivityFeed } from './activity-feed';
 import { PopularWatchlists } from './popular-watchlists';
 import { SettingsForm } from './settings-form';
 import { SignOutButton } from './sign-out-button';
+import { CheckoutToast } from './checkout-toast';
 import { LanguageSwitcher } from '../locale-provider';
 
 function formatLastCheck(dateStr: string | null, locale: Locale): string {
@@ -21,7 +22,11 @@ function formatLastCheck(dateStr: string | null, locale: Locale): string {
   return `${Math.floor(diff / 86400)}${locale === 'sv' ? 'd sedan' : 'd ago'}`;
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const session = await auth();
   if (!session?.user?.email) redirect('/login');
 
@@ -31,9 +36,12 @@ export default async function DashboardPage() {
   const cookieStore = await cookies();
   const locale = (cookieStore.get('locale')?.value as Locale) || 'en';
 
+  const params = await searchParams;
+  const checkoutSuccess = params.checkout === 'success';
+
   const [urls, history, stats] = await Promise.all([
     getWatchedUrls(user.id as string) as Promise<any[]>,
-    getChangeHistory(user.id as string, 20) as Promise<any[]>,
+    getChangeHistory(user.id as string, 50) as Promise<any[]>,
     getDashboardStats(user.id as string),
   ]);
   const urlLimit = getUrlLimit(user.plan as string);
@@ -46,6 +54,9 @@ export default async function DashboardPage() {
         <div className="absolute top-0 left-1/4 h-[300px] w-[400px] rounded-full bg-blue-600/3 blur-[100px]" />
         <div className="absolute bottom-1/4 right-1/4 h-[200px] w-[300px] rounded-full bg-indigo-600/3 blur-[80px]" />
       </div>
+
+      {/* Checkout success toast */}
+      <CheckoutToast show={checkoutSuccess} />
 
       {/* Header */}
       <header className="relative border-b border-white/5 px-4 sm:px-6 py-4">
@@ -85,14 +96,14 @@ export default async function DashboardPage() {
       </header>
 
       <main className="relative mx-auto max-w-5xl px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
-        {/* Onboarding for new users */}
+        {/* 1. Onboarding for new users */}
         {isNewUser && (
           <section>
             <Onboarding />
           </section>
         )}
 
-        {/* Stats bar — only show when user has URLs */}
+        {/* 2. Stats bar */}
         {urls.length > 0 && (
           <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="rounded-xl glass-card px-4 py-3">
@@ -120,45 +131,46 @@ export default async function DashboardPage() {
           </section>
         )}
 
-        {/* Add URL */}
-        <section className="rounded-2xl glass-card p-5 sm:p-6">
-          <div className="flex items-center justify-between mb-1">
-            <h2 className="text-lg font-semibold text-white/90">{t('dashboard.monitored', locale)}</h2>
-            {!isNewUser && (
-              <span className="text-sm text-slate-600">{urls.length} / {urlLimit} {t('dashboard.monitored.count', locale)}</span>
-            )}
+        {/* 3. Activity Feed */}
+        {urls.length > 0 && (
+          <section>
+            <h2 className="text-lg font-semibold text-white/90 mb-1">{t('feed.title', locale)}</h2>
+            <p className="text-sm text-slate-500 mb-4">{t('feed.desc', locale)}</p>
+            <ActivityFeed history={history} plan={user.plan as string} />
+          </section>
+        )}
+
+        {/* 4. Monitored Pages section */}
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-lg font-semibold text-white/90">{t('monitor.title', locale)}</h2>
+              {!isNewUser && (
+                <span className="text-sm text-slate-600">{urls.length} / {urlLimit} {t('dashboard.monitored.count', locale)}</span>
+              )}
+            </div>
           </div>
-          <p className="text-sm text-slate-500 mb-4">{t('dashboard.monitored.desc', locale)}</p>
-          <AddUrlForm canAdd={urls.length < urlLimit} />
+
+          {/* Inline Add URL form */}
+          <div className="rounded-xl glass-card p-4 mb-4">
+            <AddUrlForm canAdd={urls.length < urlLimit} plan={user.plan as string} />
+          </div>
+
+          {/* URL grid */}
+          <MonitoredGrid urls={urls} />
         </section>
 
-        {/* URL list */}
-        {urls.length > 0 && (
-          <section>
-            <UrlList urls={urls} />
-          </section>
-        )}
-
-        {/* Change log — show section always once user has URLs, with empty state */}
-        {urls.length > 0 && (
-          <section>
-            <h2 className="text-lg font-semibold text-white/90 mb-1">{t('dashboard.changes', locale)}</h2>
-            <p className="text-sm text-slate-500 mb-4">{t('dashboard.changes.desc', locale)}</p>
-            <ChangeLog history={history} />
-          </section>
-        )}
-
-        {/* Popular watchlists */}
+        {/* 5. Discover section */}
         <section>
-          <h2 className="text-lg font-semibold text-white/90 mb-1">{t('dashboard.popular', locale)}</h2>
-          <p className="text-sm text-slate-500 mb-4">{t('dashboard.popular.desc', locale)}</p>
+          <h2 className="text-lg font-semibold text-white/90 mb-1">{t('discover.title', locale)}</h2>
+          <p className="text-sm text-slate-500 mb-4">{t('discover.desc', locale)}</p>
           <PopularWatchlists
             existingUrls={urls.map((u: any) => u.url)}
             canAdd={urls.length < urlLimit}
           />
         </section>
 
-        {/* Notification settings — collapsible */}
+        {/* 6. Settings (collapsed) */}
         <section>
           <details className="group">
             <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden mb-1">
@@ -173,6 +185,8 @@ export default async function DashboardPage() {
                 initialNotifyEmail={user.notify_email !== 0}
                 initialSlackWebhookUrl={(user.slack_webhook_url as string) || ''}
                 initialWeeklyDigest={user.weekly_digest !== 0}
+                initialDigestFrequency={(user.digest_frequency as string) || 'weekly'}
+                plan={user.plan as string}
               />
             </div>
           </details>

@@ -13,6 +13,7 @@ export async function GET() {
     notifyEmail: user.notify_email === 1,
     slackWebhookUrl: user.slack_webhook_url || '',
     weeklyDigest: user.weekly_digest !== 0,
+    digestFrequency: (user.digest_frequency as string) || 'weekly',
   });
 }
 
@@ -24,12 +25,13 @@ export async function PUT(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
   const body = await req.json();
-  const { notifyEmail, slackWebhookUrl, weeklyDigest } = body;
+  const { notifyEmail, slackWebhookUrl, weeklyDigest, digestFrequency } = body;
 
   await updateUserSettings(user.id as string, {
     notifyEmail: notifyEmail !== undefined ? Boolean(notifyEmail) : undefined,
     slackWebhookUrl: slackWebhookUrl !== undefined ? (slackWebhookUrl || null) : undefined,
     weeklyDigest: weeklyDigest !== undefined ? Boolean(weeklyDigest) : undefined,
+    digestFrequency: digestFrequency !== undefined ? String(digestFrequency) : undefined,
   });
 
   return NextResponse.json({ ok: true });

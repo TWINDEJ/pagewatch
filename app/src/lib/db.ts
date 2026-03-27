@@ -69,6 +69,11 @@ export async function initDb() {
     'ALTER TABLE watched_urls ADD COLUMN cookies TEXT',
     'ALTER TABLE watched_urls ADD COLUMN headers TEXT',
     'ALTER TABLE users ADD COLUMN weekly_digest INTEGER DEFAULT 1',
+    'ALTER TABLE watched_urls ADD COLUMN muted INTEGER DEFAULT 0',
+    'ALTER TABLE users ADD COLUMN checks_this_month INTEGER DEFAULT 0',
+    'ALTER TABLE users ADD COLUMN checks_month TEXT',
+    'ALTER TABLE users ADD COLUMN digest_frequency TEXT DEFAULT \'weekly\'',
+    'ALTER TABLE watched_urls ADD COLUMN webhook_url TEXT',
   ]) {
     try { await db.execute(col); } catch { /* column already exists */ }
   }
@@ -109,7 +114,7 @@ export async function updateUserPolarId(userId: string, polarCustomerId: string)
   await getDb().execute({ sql: 'UPDATE users SET polar_customer_id = ? WHERE id = ?', args: [polarCustomerId, userId] });
 }
 
-export async function updateUserSettings(userId: string, settings: { notifyEmail?: boolean; slackWebhookUrl?: string | null; weeklyDigest?: boolean }) {
+export async function updateUserSettings(userId: string, settings: { notifyEmail?: boolean; slackWebhookUrl?: string | null; weeklyDigest?: boolean; digestFrequency?: string }) {
   const updates: string[] = [];
   const args: any[] = [];
 
@@ -124,6 +129,10 @@ export async function updateUserSettings(userId: string, settings: { notifyEmail
   if (settings.weeklyDigest !== undefined) {
     updates.push('weekly_digest = ?');
     args.push(settings.weeklyDigest ? 1 : 0);
+  }
+  if (settings.digestFrequency !== undefined) {
+    updates.push('digest_frequency = ?');
+    args.push(settings.digestFrequency);
   }
 
   if (updates.length === 0) return;
@@ -152,9 +161,9 @@ export async function getWatchedUrls(userId: string) {
   return result.rows;
 }
 
-export async function addWatchedUrl(userId: string, url: string, name: string, options?: { threshold?: number; selector?: string; mobile?: boolean; minImportance?: number; cookies?: string; headers?: string }) {
+export async function addWatchedUrl(userId: string, url: string, name: string, options?: { threshold?: number; selector?: string; mobile?: boolean; minImportance?: number; cookies?: string; headers?: string; webhookUrl?: string }) {
   await getDb().execute({
-    sql: 'INSERT INTO watched_urls (user_id, url, name, threshold, selector, mobile, min_importance, cookies, headers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    sql: 'INSERT INTO watched_urls (user_id, url, name, threshold, selector, mobile, min_importance, cookies, headers, webhook_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     args: [
       userId, url, name,
       options?.threshold ?? 0.3,
@@ -163,6 +172,7 @@ export async function addWatchedUrl(userId: string, url: string, name: string, o
       options?.minImportance ?? 5,
       options?.cookies ?? null,
       options?.headers ?? null,
+      options?.webhookUrl ?? null,
     ]
   });
 }
@@ -176,11 +186,18 @@ export async function countWatchedUrls(userId: string): Promise<number> {
   return Number(result.rows[0].count);
 }
 
+export async function muteUrl(userId: string, urlId: number, muted: boolean) {
+  await getDb().execute({
+    sql: 'UPDATE watched_urls SET muted = ? WHERE id = ? AND user_id = ?',
+    args: [muted ? 1 : 0, urlId, userId],
+  });
+}
+
 // ─── All URLs (for cron job) ───
 
 export async function getAllActiveUrls() {
   const result = await getDb().execute({
-    sql: 'SELECT wu.*, u.email, u.plan, u.notify_email, u.slack_webhook_url FROM watched_urls wu JOIN users u ON wu.user_id = u.id WHERE wu.active = 1',
+    sql: 'SELECT wu.*, u.email, u.plan, u.notify_email, u.slack_webhook_url FROM watched_urls wu JOIN users u ON wu.user_id = u.id WHERE wu.active = 1 AND (wu.muted IS NULL OR wu.muted = 0)',
     args: []
   });
   return result.rows;
@@ -207,6 +224,10 @@ export async function addChangeRecord(userId: string, record: {
 export async function getChangeHistory(userId: string, limit = 50) {
   const result = await getDb().execute({ sql: 'SELECT * FROM change_history WHERE user_id = ? ORDER BY checked_at DESC LIMIT ?', args: [userId, limit] });
   return result.rows;
+}
+
+export async function deleteChangeHistoryByUrl(userId: string, url: string) {
+  await getDb().execute({ sql: 'DELETE FROM change_history WHERE user_id = ? AND url = ?', args: [userId, url] });
 }
 
 // ─── URL status updates (for engine) ───
@@ -257,4 +278,44 @@ export function getUrlLimit(plan: string): number {
     case 'team': return 100;
     default: return 3;
   }
+}
+
+export function getCheckLimit(plan: string): number {
+  switch (plan) {
+    case 'pro': return 2000;
+    case 'team': return 10000;
+    default: return 100;
+  }
+}
+
+// ─── Monthly check counter ───
+
+export async function getMonthlyCheckCount(userId: string): Promise<number> {
+  const db = getDb();
+  const currentMonth = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
+  const result = await db.execute({
+    sql: 'SELECT checks_this_month, checks_month FROM users WHERE id = ?',
+    args: [userId],
+  });
+  const row = result.rows[0];
+  if (!row) return 0;
+
+  // Reset if month changed
+  if (row.checks_month !== currentMonth) {
+    await db.execute({
+      sql: 'UPDATE users SET checks_this_month = 0, checks_month = ? WHERE id = ?',
+      args: [currentMonth, userId],
+    });
+    return 0;
+  }
+  return Number(row.checks_this_month) || 0;
+}
+
+export async function incrementCheckCount(userId: string): Promise<void> {
+  const db = getDb();
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  await db.execute({
+    sql: `UPDATE users SET checks_this_month = CASE WHEN checks_month = ? THEN checks_this_month + 1 ELSE 1 END, checks_month = ? WHERE id = ?`,
+    args: [currentMonth, currentMonth, userId],
+  });
 }

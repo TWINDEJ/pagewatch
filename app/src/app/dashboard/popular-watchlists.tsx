@@ -62,26 +62,24 @@ export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: stri
   }, [canAdd, locale, router, show, t]);
 
   const filtered = activeCategory ? suggestions.filter(s => s.category === activeCategory) : suggestions;
-  const visible = expanded ? filtered : filtered.slice(0, 4);
-  const hasMore = filtered.length > 4;
+  const visible = expanded ? filtered : filtered.slice(0, 6);
+  const hasMore = filtered.length > 6;
 
   return (
     <>
       <div className="space-y-4">
-        {expanded && (
-          <div className="flex gap-2 flex-wrap">
-            <button onClick={() => setActiveCategory(null)}
-              className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${!activeCategory ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}>
-              {t('watchlists.all')}
+        <div className="flex gap-2 flex-wrap">
+          <button onClick={() => setActiveCategory(null)}
+            className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${!activeCategory ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}>
+            {t('watchlists.all')}
+          </button>
+          {categories.map(cat => (
+            <button key={cat} onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
+              className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${activeCategory === cat ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}>
+              {cat}
             </button>
-            {categories.map(cat => (
-              <button key={cat} onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-                className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${activeCategory === cat ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}>
-                {cat}
-              </button>
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           {visible.map((s) => {
@@ -110,7 +108,7 @@ export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: stri
         </div>
 
         {hasMore && (
-          <button onClick={() => { setExpanded(!expanded); if (expanded) setActiveCategory(null); }}
+          <button onClick={() => setExpanded(!expanded)}
             className="cursor-pointer flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-blue-400 transition-colors duration-200">
             {expanded ? t('watchlists.showLess') : `${t('watchlists.showAll')} ${suggestions.length} ${t('watchlists.suggestions')}`}
             <svg className={`h-3.5 w-3.5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
