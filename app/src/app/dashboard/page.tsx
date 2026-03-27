@@ -91,6 +91,15 @@ export default async function DashboardPage({
                 {t('header.upgrade', locale)}
               </a>
             )}
+            <a
+              href={`mailto:kristian@changebrief.io?subject=${encodeURIComponent(locale === 'sv' ? 'Feedback på changebrief' : 'Feedback on changebrief')}&body=${encodeURIComponent(locale === 'sv'
+                ? '1. Vilka sidor/myndigheter bevakar du?\n\n2. Fick du någon ändring klassificerad? Stämde den?\n\n3. Vad saknar du?\n\n4. Skulle du betala för detta? Hur mycket?\n\n5. Vem mer borde testa detta?\n'
+                : '1. Which pages/agencies are you monitoring?\n\n2. Did you get any change classified? Was it accurate?\n\n3. What is missing?\n\n4. Would you pay for this? How much?\n\n5. Who else should try this?\n')}`}
+              className="group flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 px-3 py-1 text-xs font-medium text-amber-300 hover:from-amber-500/30 hover:to-orange-500/30 hover:text-amber-200 transition-all animate-pulse hover:animate-none"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+              {locale === 'sv' ? 'Ge feedback' : 'Give feedback'}
+            </a>
             <span className="text-sm text-slate-500 hidden md:inline">{session.user.email}</span>
             <SignOutButton />
           </div>
