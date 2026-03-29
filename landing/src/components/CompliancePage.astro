@@ -76,25 +76,25 @@ const structuredData = [{
   <Header lang={lang} />
   <main>
     <!-- Hero -->
-    <section class="relative overflow-hidden pt-36 pb-24 lg:pt-44 lg:pb-36 bg-gradient-to-b from-red-50/60 to-white">
+    <section class="relative overflow-hidden pt-36 pb-24 lg:pt-44 lg:pb-36" style="background: linear-gradient(to bottom, var(--hero-compliance-from), var(--hero-compliance-to))">
       <div class="relative mx-auto max-w-6xl px-6 text-center">
         <div class="mb-8 inline-flex animate-fade-in-up items-center gap-2.5 rounded-full bg-red-50 border border-red-100 px-4 py-2 text-sm text-red-700">
           <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-60"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-red-500"></span></span>
           {lt('reg.badge', lang)}
         </div>
-        <h1 class="mx-auto max-w-4xl animate-fade-in-up delay-100 text-5xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
+        <h1 class="mx-auto max-w-4xl animate-fade-in-up delay-100 text-5xl font-extrabold leading-[1.1] tracking-tight theme-text sm:text-6xl lg:text-7xl">
           {lt('reg.h1a', lang)}
           <span class="block bg-gradient-to-r from-red-600 via-amber-500 to-orange-500 bg-clip-text text-transparent">{lt('reg.h1b', lang)}</span>
         </h1>
-        <p class="mx-auto mt-6 max-w-2xl animate-fade-in-up delay-200 text-lg leading-relaxed text-slate-600 lg:text-xl">
-          <span class="text-slate-900 font-semibold">change</span><span class="text-blue-600 font-semibold">brief</span> {lang === 'sv' ? 'bevakar myndigheter och tillsynsorgan med AI — och berättar exakt vad som ändrades, om det kräver åtgärd och vilken jurisdiktion som berörs.' : 'monitors government agencies and regulators with AI — and tells you exactly what changed, whether it requires action, and which jurisdiction it affects.'}
+        <p class="mx-auto mt-6 max-w-2xl animate-fade-in-up delay-200 text-lg leading-relaxed theme-text-secondary lg:text-xl">
+          <span class="theme-text font-semibold">change</span><span class="text-blue-600 font-semibold">brief</span> {lang === 'sv' ? 'bevakar myndigheter och tillsynsorgan med AI — och berättar exakt vad som ändrades, om det kräver åtgärd och vilken jurisdiktion som berörs.' : 'monitors government agencies and regulators with AI — and tells you exactly what changed, whether it requires action, and which jurisdiction it affects.'}
         </p>
         <div class="mt-10 flex animate-fade-in-up delay-300 flex-col items-center justify-center gap-4 sm:flex-row">
           <a href="https://app.changebrief.io?ref=compliance" class="btn-glow group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-amber-600 px-8 py-3.5 text-base font-semibold text-white transition-all duration-300">
             {lt('reg.cta1', lang)}
             <svg class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
           </a>
-          <a href="#how-it-works" class="group inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-8 py-3.5 text-base font-semibold text-slate-700 transition-all duration-200 hover:border-slate-300 hover:text-slate-900 hover:shadow-sm">
+          <a href="#how-it-works" class="group inline-flex items-center gap-2 rounded-full border theme-border theme-bg px-8 py-3.5 text-base font-semibold theme-text-secondary transition-all duration-200 hover:border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:shadow-sm">
             {lt('reg.cta2', lang)}
             <svg class="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
           </a>
@@ -108,14 +108,14 @@ const structuredData = [{
                 <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
                 {lang === 'sv' ? 'Åtgärd krävs' : 'Action required'}
               </span>
-              <span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-mono text-slate-600">SE</span>
-              <span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-mono text-slate-600">{lang === 'sv' ? 'Föreskrift' : 'Regulation'}</span>
+              <span class="rounded theme-bg-muted px-1.5 py-0.5 text-[10px] font-mono theme-text-secondary">SE</span>
+              <span class="rounded theme-bg-muted px-1.5 py-0.5 text-[10px] font-mono theme-text-secondary">{lang === 'sv' ? 'Föreskrift' : 'Regulation'}</span>
             </div>
-            <p class="text-sm text-slate-700">{lang === 'sv' ? '"Finansinspektionen publicerade FFFS 2026:4 som skärper kraven på AML-rapportering. Ikraftträdande: 1 juli 2026."' : '"Finansinspektionen published FFFS 2026:4 tightening AML reporting requirements. Effective date: July 1, 2026."'}</p>
-            <div class="flex items-center gap-2 text-xs text-slate-500">
+            <p class="text-sm theme-text-secondary">{lang === 'sv' ? '"Finansinspektionen publicerade FFFS 2026:4 som skärper kraven på AML-rapportering. Ikraftträdande: 1 juli 2026."' : '"Finansinspektionen published FFFS 2026:4 tightening AML reporting requirements. Effective date: July 1, 2026."'}</p>
+            <div class="flex items-center gap-2 text-xs theme-text-muted">
               <span class="rounded-full bg-red-50 px-1.5 py-0.5 text-red-600 font-medium">9/10</span>
               <span>fi.se</span>
-              <span class="text-slate-300">|</span>
+              <span class="theme-text-muted">|</span>
               <span>{lang === 'sv' ? '14 mar 2026, 08:15' : 'Mar 14, 2026, 08:15'}</span>
             </div>
           </div>
@@ -124,11 +124,11 @@ const structuredData = [{
     </section>
 
     <!-- Problem / Before & After -->
-    <section id="how-it-works" class="relative py-24 lg:py-32 border-t border-slate-100">
+    <section id="how-it-works" class="relative py-24 lg:py-32 border-t theme-border">
       <div class="mx-auto max-w-6xl px-6">
         <div class="text-center animate-fade-in-up">
-          <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">{lt('reg.problem.h2', lang)}</h2>
-          <p class="mx-auto mt-4 max-w-3xl text-lg text-slate-600">{lt('reg.problem.sub', lang)}</p>
+          <h2 class="text-3xl font-bold tracking-tight theme-text sm:text-4xl lg:text-5xl">{lt('reg.problem.h2', lang)}</h2>
+          <p class="mx-auto mt-4 max-w-3xl text-lg theme-text-secondary">{lt('reg.problem.sub', lang)}</p>
         </div>
         <div class="mt-16 grid gap-8 md:grid-cols-2">
           <!-- Before -->
@@ -137,7 +137,7 @@ const structuredData = [{
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" /></svg>
               {lt('reg.problem.before', lang)}
             </div>
-            <ul class="space-y-4 text-slate-600 text-[15px]">
+            <ul class="space-y-4 theme-text-secondary text-[15px]">
               {[lt('reg.problem.b1', lang), lt('reg.problem.b2', lang), lt('reg.problem.b3', lang), lt('reg.problem.b4', lang)].map(item => (
                 <li class="flex items-start gap-3">
                   <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400"></span>
@@ -147,12 +147,12 @@ const structuredData = [{
             </ul>
           </div>
           <!-- After -->
-          <div class="animate-fade-in-up rounded-2xl border-2 border-emerald-200 bg-emerald-50/30 p-8">
+          <div class="animate-fade-in-up rounded-2xl border-2 p-8" style="background: var(--after-bg); border-color: var(--after-border)">
             <div class="mb-6 flex items-center gap-2 text-sm font-semibold text-emerald-600">
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7" /></svg>
               {lt('reg.problem.after', lang)}
             </div>
-            <ul class="space-y-4 text-slate-700 text-[15px]">
+            <ul class="space-y-4 theme-text-secondary text-[15px]">
               {[lt('reg.problem.a1', lang), lt('reg.problem.a2', lang), lt('reg.problem.a3', lang), lt('reg.problem.a4', lang)].map(item => (
                 <li class="flex items-start gap-3">
                   <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500"></span>
@@ -166,11 +166,11 @@ const structuredData = [{
     </section>
 
     <!-- How it works -->
-    <section class="relative py-24 lg:py-32 bg-slate-50/50 border-t border-slate-100">
+    <section class="relative py-24 lg:py-32 theme-bg-secondary border-t theme-border">
       <div class="mx-auto max-w-6xl px-6">
         <div class="text-center animate-fade-in-up">
-          <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">{lt('reg.how.h2', lang)}</h2>
-          <p class="mx-auto mt-4 max-w-2xl text-lg text-slate-600">{lt('reg.how.sub', lang)}</p>
+          <h2 class="text-3xl font-bold tracking-tight theme-text sm:text-4xl lg:text-5xl">{lt('reg.how.h2', lang)}</h2>
+          <p class="mx-auto mt-4 max-w-2xl text-lg theme-text-secondary">{lt('reg.how.sub', lang)}</p>
         </div>
         <div class="mt-16 grid gap-8 md:grid-cols-3">
           {[
@@ -183,8 +183,8 @@ const structuredData = [{
                 <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d={icon} /></svg>
               </div>
               <div class={`mb-2 text-xs font-semibold uppercase tracking-widest text-${color}-600/70`}>{lt(`${step}` as any, lang)}</div>
-              <h3 class="text-xl font-bold text-slate-900">{lt(`${step}.h` as any, lang)}</h3>
-              <p class="mt-2 text-slate-600 text-[15px] leading-relaxed">{lt(`${step}.p` as any, lang)}</p>
+              <h3 class="text-xl font-bold theme-text">{lt(`${step}.h` as any, lang)}</h3>
+              <p class="mt-2 theme-text-secondary text-[15px] leading-relaxed">{lt(`${step}.p` as any, lang)}</p>
             </div>
           ))}
         </div>
@@ -192,10 +192,10 @@ const structuredData = [{
     </section>
 
     <!-- Why changebrief -->
-    <section class="relative py-24 lg:py-32 bg-white border-t border-slate-100">
+    <section class="relative py-24 lg:py-32 theme-bg border-t theme-border">
       <div class="mx-auto max-w-6xl px-6">
         <div class="text-center animate-fade-in-up">
-          <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">{lt('reg.why.h2', lang)}</h2>
+          <h2 class="text-3xl font-bold tracking-tight theme-text sm:text-4xl lg:text-5xl">{lt('reg.why.h2', lang)}</h2>
         </div>
         <div class="mt-16 grid gap-6 md:grid-cols-2">
           <!-- Web monitoring -->
@@ -203,132 +203,132 @@ const structuredData = [{
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.why.web.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.why.web.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.why.web.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.why.web.p', lang)}</p>
           </div>
           <!-- AI analysis -->
           <div class="animate-fade-in-up glass-card rounded-2xl p-8">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.why.ai.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.why.ai.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.why.ai.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.why.ai.p', lang)}</p>
           </div>
           <!-- Open platform -->
           <div class="animate-fade-in-up glass-card rounded-2xl p-8">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.why.open.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.why.open.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.why.open.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.why.open.p', lang)}</p>
           </div>
           <!-- API-first -->
           <div class="animate-fade-in-up glass-card rounded-2xl p-8">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.why.api.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.why.api.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.why.api.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.why.api.p', lang)}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ISO section -->
-    <section class="relative py-24 lg:py-32 bg-blue-50/30 border-t border-slate-100">
+    <section class="relative py-24 lg:py-32 border-t theme-border" style="background: var(--iso-bg)">
       <div class="mx-auto max-w-6xl px-6">
         <div class="text-center animate-fade-in-up">
-          <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">{lt('reg.iso.h2', lang)}</h2>
-          <p class="mx-auto mt-4 max-w-3xl text-lg text-slate-600">{lt('reg.iso.sub', lang)}</p>
+          <h2 class="text-3xl font-bold tracking-tight theme-text sm:text-4xl lg:text-5xl">{lt('reg.iso.h2', lang)}</h2>
+          <p class="mx-auto mt-4 max-w-3xl text-lg theme-text-secondary">{lt('reg.iso.sub', lang)}</p>
         </div>
         <div class="mt-16 grid gap-6 md:grid-cols-3">
           <!-- Audit trail -->
-          <div class="animate-fade-in-up rounded-2xl bg-white p-8 shadow-sm border border-slate-100">
+          <div class="animate-fade-in-up rounded-2xl theme-bg p-8 shadow-sm border theme-border">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.iso.audit.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.iso.audit.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.iso.audit.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.iso.audit.p', lang)}</p>
           </div>
           <!-- Kvittens -->
-          <div class="animate-fade-in-up rounded-2xl bg-white p-8 shadow-sm border border-slate-100">
+          <div class="animate-fade-in-up rounded-2xl theme-bg p-8 shadow-sm border theme-border">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.iso.kvittens.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.iso.kvittens.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.iso.kvittens.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.iso.kvittens.p', lang)}</p>
           </div>
           <!-- Overview -->
-          <div class="animate-fade-in-up rounded-2xl bg-white p-8 shadow-sm border border-slate-100">
+          <div class="animate-fade-in-up rounded-2xl theme-bg p-8 shadow-sm border theme-border">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.iso.overview.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.iso.overview.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.iso.overview.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.iso.overview.p', lang)}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Features -->
-    <section class="relative py-24 lg:py-32 bg-slate-50/50 border-t border-slate-100">
+    <section class="relative py-24 lg:py-32 theme-bg-secondary border-t theme-border">
       <div class="mx-auto max-w-6xl px-6">
         <div class="text-center animate-fade-in-up">
-          <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">{lt('reg.feat.h2', lang)}</h2>
-          <p class="mx-auto mt-4 max-w-2xl text-lg text-slate-600">{lt('reg.feat.sub', lang)}</p>
+          <h2 class="text-3xl font-bold tracking-tight theme-text sm:text-4xl lg:text-5xl">{lt('reg.feat.h2', lang)}</h2>
+          <p class="mx-auto mt-4 max-w-2xl text-lg theme-text-secondary">{lt('reg.feat.sub', lang)}</p>
         </div>
         <div class="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div class="animate-fade-in-up glass-card rounded-2xl p-8">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.feat.classify.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.feat.classify.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.feat.classify.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.feat.classify.p', lang)}</p>
           </div>
           <div class="animate-fade-in-up glass-card rounded-2xl p-8">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.feat.juris.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.feat.juris.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.feat.juris.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.feat.juris.p', lang)}</p>
           </div>
           <div class="animate-fade-in-up glass-card rounded-2xl p-8">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.feat.doctype.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.feat.doctype.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.feat.doctype.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.feat.doctype.p', lang)}</p>
           </div>
           <div class="animate-fade-in-up glass-card rounded-2xl p-8">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.feat.audit.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.feat.audit.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.feat.audit.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.feat.audit.p', lang)}</p>
           </div>
           <div class="animate-fade-in-up glass-card rounded-2xl p-8">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.feat.pre.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.feat.pre.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.feat.pre.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.feat.pre.p', lang)}</p>
           </div>
           <div class="animate-fade-in-up glass-card rounded-2xl p-8">
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-900">{lt('reg.feat.sector.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.feat.sector.p', lang)}</p>
+            <h3 class="text-xl font-bold theme-text">{lt('reg.feat.sector.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.feat.sector.p', lang)}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Beyond legislation -->
-    <section class="relative py-24 lg:py-32 bg-white border-t border-slate-100">
+    <section class="relative py-24 lg:py-32 theme-bg border-t theme-border">
       <div class="mx-auto max-w-6xl px-6">
         <div class="text-center animate-fade-in-up">
-          <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">{lt('reg.beyond.h2', lang)}</h2>
+          <h2 class="text-3xl font-bold tracking-tight theme-text sm:text-4xl lg:text-5xl">{lt('reg.beyond.h2', lang)}</h2>
         </div>
         <div class="mt-16 grid gap-8 md:grid-cols-3">
           <!-- Visual changes -->
@@ -336,59 +336,59 @@ const structuredData = [{
             <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-600">
               <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
             </div>
-            <h3 class="text-lg font-bold text-slate-900">{lt('reg.beyond.visual.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.beyond.visual.p', lang)}</p>
+            <h3 class="text-lg font-bold theme-text">{lt('reg.beyond.visual.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.beyond.visual.p', lang)}</p>
           </div>
           <!-- Guidance -->
           <div class="animate-fade-in-up text-center">
             <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
               <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
             </div>
-            <h3 class="text-lg font-bold text-slate-900">{lt('reg.beyond.guidance.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.beyond.guidance.p', lang)}</p>
+            <h3 class="text-lg font-bold theme-text">{lt('reg.beyond.guidance.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.beyond.guidance.p', lang)}</p>
           </div>
           <!-- International -->
           <div class="animate-fade-in-up text-center">
             <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
               <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
-            <h3 class="text-lg font-bold text-slate-900">{lt('reg.beyond.intl.h', lang)}</h3>
-            <p class="mt-3 text-slate-600 text-[15px] leading-relaxed">{lt('reg.beyond.intl.p', lang)}</p>
+            <h3 class="text-lg font-bold theme-text">{lt('reg.beyond.intl.h', lang)}</h3>
+            <p class="mt-3 theme-text-secondary text-[15px] leading-relaxed">{lt('reg.beyond.intl.p', lang)}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Numbers strip -->
-    <section class="relative py-16 bg-slate-900">
+    <section class="relative py-16 theme-numbers">
       <div class="mx-auto max-w-6xl px-6">
         <div class="grid grid-cols-2 gap-8 md:grid-cols-4 text-center">
           <div class="animate-fade-in-up">
             <div class="text-4xl font-extrabold text-white lg:text-5xl">60+</div>
-            <div class="mt-2 text-sm font-medium text-slate-400">{lt('reg.proof.authorities', lang)}</div>
+            <div class="mt-2 text-sm font-medium theme-text-muted">{lt('reg.proof.authorities', lang)}</div>
           </div>
           <div class="animate-fade-in-up">
             <div class="text-4xl font-extrabold text-white lg:text-5xl">8</div>
-            <div class="mt-2 text-sm font-medium text-slate-400">{lt('reg.proof.sectors', lang)}</div>
+            <div class="mt-2 text-sm font-medium theme-text-muted">{lt('reg.proof.sectors', lang)}</div>
           </div>
           <div class="animate-fade-in-up">
             <div class="text-4xl font-extrabold text-white lg:text-5xl">5</div>
-            <div class="mt-2 text-sm font-medium text-slate-400">{lt('reg.proof.countries', lang)}</div>
+            <div class="mt-2 text-sm font-medium theme-text-muted">{lt('reg.proof.countries', lang)}</div>
           </div>
           <div class="animate-fade-in-up">
             <div class="text-4xl font-extrabold text-white lg:text-5xl">9</div>
-            <div class="mt-2 text-sm font-medium text-slate-400">{lt('reg.proof.integrations', lang)}</div>
+            <div class="mt-2 text-sm font-medium theme-text-muted">{lt('reg.proof.integrations', lang)}</div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Sectors grid -->
-    <section class="relative py-24 lg:py-32 border-t border-slate-100">
+    <section class="relative py-24 lg:py-32 border-t theme-border">
       <div class="mx-auto max-w-6xl px-6">
         <div class="text-center animate-fade-in-up">
-          <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">{lt('reg.sectors.h2', lang)}</h2>
-          <p class="mx-auto mt-4 max-w-2xl text-lg text-slate-600">{lt('reg.sectors.sub', lang)}</p>
+          <h2 class="text-3xl font-bold tracking-tight theme-text sm:text-4xl lg:text-5xl">{lt('reg.sectors.h2', lang)}</h2>
+          <p class="mx-auto mt-4 max-w-2xl text-lg theme-text-secondary">{lt('reg.sectors.sub', lang)}</p>
         </div>
         <div class="mt-16 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {([
@@ -404,8 +404,8 @@ const structuredData = [{
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d={icon} /></svg>
               </div>
               <div>
-                <h3 class="font-semibold text-slate-900">{lt(`reg.sectors.${key}` as any, lang)}</h3>
-                <p class="mt-1 text-sm text-slate-500">{lt(`reg.sectors.${key}.p` as any, lang)}</p>
+                <h3 class="font-semibold theme-text">{lt(`reg.sectors.${key}` as any, lang)}</h3>
+                <p class="mt-1 text-sm theme-text-muted">{lt(`reg.sectors.${key}.p` as any, lang)}</p>
               </div>
             </div>
           ))}
@@ -414,17 +414,17 @@ const structuredData = [{
     </section>
 
     <!-- FAQ -->
-    <section class="relative py-24 lg:py-32 bg-slate-50/50 border-t border-slate-100">
+    <section class="relative py-24 lg:py-32 theme-bg-secondary border-t theme-border">
       <div class="mx-auto max-w-3xl px-6">
-        <h2 class="animate-fade-in-up text-center text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">{lt('reg.faq.h2', lang)}</h2>
+        <h2 class="animate-fade-in-up text-center text-3xl font-bold tracking-tight theme-text sm:text-4xl lg:text-5xl">{lt('reg.faq.h2', lang)}</h2>
         <div class="mt-12 space-y-4">
           {['1','2','3','4'].map(n => (
             <details class="group animate-fade-in-up glass-card rounded-2xl p-6 cursor-pointer">
-              <summary class="flex items-center justify-between font-semibold text-slate-900 [&::-webkit-details-marker]:hidden">
+              <summary class="flex items-center justify-between font-semibold theme-text [&::-webkit-details-marker]:hidden">
                 {lt(`reg.faq.q${n}` as any, lang)}
-                <svg class="h-5 w-5 shrink-0 text-slate-400 transition-transform duration-300 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                <svg class="h-5 w-5 shrink-0 theme-text-muted transition-transform duration-300 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
               </summary>
-              <p class="mt-4 text-sm text-slate-600 leading-relaxed">{lt(`reg.faq.a${n}` as any, lang)}</p>
+              <p class="mt-4 text-sm theme-text-secondary leading-relaxed">{lt(`reg.faq.a${n}` as any, lang)}</p>
             </details>
           ))}
         </div>
@@ -432,33 +432,33 @@ const structuredData = [{
     </section>
 
     <!-- Pricing -->
-    <section id="pricing" class="relative py-24 lg:py-32 bg-slate-50/50 border-t border-slate-100">
+    <section id="pricing" class="relative py-24 lg:py-32 theme-bg-secondary border-t theme-border">
       <div class="mx-auto max-w-6xl px-6">
         <div class="text-center animate-fade-in-up">
-          <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">{lt('price.h2', lang)}</h2>
-          <p class="mx-auto mt-4 max-w-2xl text-lg text-slate-600">{lt('price.sub', lang)}</p>
+          <h2 class="text-3xl font-bold tracking-tight theme-text sm:text-4xl lg:text-5xl">{lt('price.h2', lang)}</h2>
+          <p class="mx-auto mt-4 max-w-2xl text-lg theme-text-secondary">{lt('price.sub', lang)}</p>
         </div>
         <div class="mt-16 grid gap-6 lg:grid-cols-3">
           <!-- Free -->
           <div class="animate-fade-in-up glass-card rounded-2xl p-8 flex flex-col">
-            <h3 class="text-lg font-semibold text-slate-500">Free</h3>
-            <div class="mt-4 flex items-baseline gap-1"><span class="text-4xl font-bold text-slate-900">$0</span><span class="text-slate-500">{lt('price.mo', lang)}</span></div>
-            <p class="mt-4 text-sm text-slate-500">{lt('price.free.desc', lang)}</p>
-            <ul class="mt-8 space-y-3 text-sm text-slate-600 flex-1">
+            <h3 class="text-lg font-semibold theme-text-muted">Free</h3>
+            <div class="mt-4 flex items-baseline gap-1"><span class="text-4xl font-bold theme-text">$0</span><span class="theme-text-muted">{lt('price.mo', lang)}</span></div>
+            <p class="mt-4 text-sm theme-text-muted">{lt('price.free.desc', lang)}</p>
+            <ul class="mt-8 space-y-3 text-sm theme-text-secondary flex-1">
               <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>3 {lt('price.pages', lang)}</li>
               <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>100 {lt('price.checks', lang)}</li>
               <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lt('feat.ai', lang)}</li>
             </ul>
-            <a href="https://app.changebrief.io?ref=compliance" class="mt-8 block rounded-xl border border-slate-200 bg-white py-3 text-center text-sm font-semibold text-slate-700 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 cursor-pointer">{lt('price.free.cta', lang)}</a>
+            <a href="https://app.changebrief.io?ref=compliance" class="mt-8 block rounded-xl border theme-border theme-bg py-3 text-center text-sm font-semibold theme-text-secondary transition-all duration-200 hover:border-[var(--border-primary)] hover:bg-[var(--bg-secondary)] cursor-pointer">{lt('price.free.cta', lang)}</a>
           </div>
           <!-- Pro -->
           <div class="animate-fade-in-up relative rounded-2xl ring-2 ring-red-500 p-px flex flex-col">
             <div class="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-red-600 to-amber-600 px-4 py-1 text-xs font-semibold text-white">{lt('price.popular', lang)}</div>
-            <div class="rounded-2xl bg-white p-8 flex flex-col flex-1">
-              <h3 class="text-lg font-semibold text-slate-900">Pro</h3>
-              <div class="mt-4 flex items-baseline gap-1"><span class="text-4xl font-bold text-slate-900">$19</span><span class="text-slate-500">{lt('price.mo', lang)}</span></div>
-              <p class="mt-4 text-sm text-slate-600">{lt('price.pro.desc', lang)}</p>
-              <ul class="mt-8 space-y-3 text-sm text-slate-700 flex-1">
+            <div class="rounded-2xl theme-bg p-8 flex flex-col flex-1">
+              <h3 class="text-lg font-semibold theme-text">Pro</h3>
+              <div class="mt-4 flex items-baseline gap-1"><span class="text-4xl font-bold theme-text">$19</span><span class="theme-text-muted">{lt('price.mo', lang)}</span></div>
+              <p class="mt-4 text-sm theme-text-secondary">{lt('price.pro.desc', lang)}</p>
+              <ul class="mt-8 space-y-3 text-sm theme-text-secondary flex-1">
                 <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>25 {lt('price.pages', lang)}</li>
                 <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>2,000 {lt('price.checks', lang)}</li>
                 <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>90 {lt('price.days', lang)}</li>
@@ -469,16 +469,16 @@ const structuredData = [{
           </div>
           <!-- Team -->
           <div class="animate-fade-in-up glass-card rounded-2xl p-8 flex flex-col">
-            <h3 class="text-lg font-semibold text-slate-500">Team</h3>
-            <div class="mt-4 flex items-baseline gap-1"><span class="text-4xl font-bold text-slate-900">$49</span><span class="text-slate-500">{lt('price.mo', lang)}</span></div>
-            <p class="mt-4 text-sm text-slate-500">{lt('price.team.desc', lang)}</p>
-            <ul class="mt-8 space-y-3 text-sm text-slate-600 flex-1">
+            <h3 class="text-lg font-semibold theme-text-muted">Team</h3>
+            <div class="mt-4 flex items-baseline gap-1"><span class="text-4xl font-bold theme-text">$49</span><span class="theme-text-muted">{lt('price.mo', lang)}</span></div>
+            <p class="mt-4 text-sm theme-text-muted">{lt('price.team.desc', lang)}</p>
+            <ul class="mt-8 space-y-3 text-sm theme-text-secondary flex-1">
               <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>100 {lt('price.pages', lang)}</li>
               <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>10,000 {lt('price.checks', lang)}</li>
               <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lt('price.everything', lang)}</li>
               <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lt('price.1year', lang)}</li>
             </ul>
-            <a href="https://buy.polar.sh/polar_cl_HmjMU2dLQz7qe5fAcTjK2SsssRYDPboqXQJXd4QgARz" class="mt-8 block rounded-xl border border-slate-200 bg-white py-3 text-center text-sm font-semibold text-slate-700 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 cursor-pointer">{lt('price.team.cta', lang)}</a>
+            <a href="https://buy.polar.sh/polar_cl_HmjMU2dLQz7qe5fAcTjK2SsssRYDPboqXQJXd4QgARz" class="mt-8 block rounded-xl border theme-border theme-bg py-3 text-center text-sm font-semibold theme-text-secondary transition-all duration-200 hover:border-[var(--border-primary)] hover:bg-[var(--bg-secondary)] cursor-pointer">{lt('price.team.cta', lang)}</a>
           </div>
         </div>
       </div>
@@ -486,32 +486,32 @@ const structuredData = [{
   </main>
 
   <!-- Footer CTA -->
-  <section class="relative py-24 lg:py-32 border-t border-slate-100">
+  <section class="relative py-24 lg:py-32 border-t theme-border">
     <div class="relative mx-auto max-w-6xl px-6 text-center">
-      <h2 class="animate-fade-in-up text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+      <h2 class="animate-fade-in-up text-3xl font-bold tracking-tight theme-text sm:text-4xl lg:text-5xl">
         {lt('reg.footer.h2a', lang)}<br class="hidden sm:block" /> {lt('reg.footer.h2b', lang)} <span class="bg-gradient-to-r from-red-600 via-amber-500 to-orange-500 bg-clip-text text-transparent">{lt('reg.footer.h2c', lang)}</span>
       </h2>
-      <p class="mx-auto mt-4 max-w-xl animate-fade-in-up text-lg text-slate-600">{lt('reg.footer.sub', lang)}</p>
+      <p class="mx-auto mt-4 max-w-xl animate-fade-in-up text-lg theme-text-secondary">{lt('reg.footer.sub', lang)}</p>
       <a href="https://app.changebrief.io?ref=compliance" class="btn-glow mt-8 inline-flex animate-fade-in-up items-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-amber-600 px-8 py-3.5 text-base font-semibold text-white transition-all duration-300 cursor-pointer">
         {lt('footer.cta', lang)}
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
       </a>
     </div>
   </section>
-  <footer class="border-t border-slate-100 py-12">
+  <footer class="border-t theme-border py-12">
     <div class="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 sm:flex-row sm:justify-between">
       <a href="/" class="flex items-center gap-2.5 text-lg font-bold">
         <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600">
           <svg class="h-3.5 w-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3" /><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" /></svg>
         </div>
-        <span class="text-slate-900">change<span class="text-blue-600">brief</span></span>
+        <span class="theme-text">change<span class="text-blue-600">brief</span></span>
       </a>
-      <nav class="flex gap-6 text-sm text-slate-500">
-        <a href="/" class="transition-colors duration-200 hover:text-slate-900 cursor-pointer">{lang === 'sv' ? 'Hem' : 'Home'}</a>
-        <a href="#" class="transition-colors duration-200 hover:text-slate-900 cursor-pointer">{lt('footer.privacy', lang)}</a>
-        <a href="#" class="transition-colors duration-200 hover:text-slate-900 cursor-pointer">{lt('footer.contact', lang)}</a>
+      <nav class="flex gap-6 text-sm theme-text-muted">
+        <a href="/" class="transition-colors duration-200 hover:text-[var(--text-primary)] cursor-pointer">{lang === 'sv' ? 'Hem' : 'Home'}</a>
+        <a href="#" class="transition-colors duration-200 hover:text-[var(--text-primary)] cursor-pointer">{lt('footer.privacy', lang)}</a>
+        <a href="#" class="transition-colors duration-200 hover:text-[var(--text-primary)] cursor-pointer">{lt('footer.contact', lang)}</a>
       </nav>
-      <p class="text-sm text-slate-400">&copy; 2026 changebrief</p>
+      <p class="text-sm theme-text-muted">&copy; 2026 changebrief</p>
     </div>
   </footer>
 </Base>
