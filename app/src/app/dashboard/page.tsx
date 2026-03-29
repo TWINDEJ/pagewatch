@@ -22,6 +22,7 @@ import { ThemeToggle } from './theme-toggle';
 import { AnimatedNumber } from './animated-number';
 import { DashboardShell } from './dashboard-shell';
 import { FaviconBadge } from './favicon-badge';
+import { ShortcutHint } from './shortcut-hint';
 import ComplianceOnboarding from './compliance-onboarding';
 
 function formatLastCheck(dateStr: string | null, locale: Locale): string {
@@ -295,6 +296,7 @@ export default async function DashboardPage({
       </main>
 
       <KeyboardShortcutsHelp />
+      <ShortcutHint />
       </DashboardShell>
     </div>
   );

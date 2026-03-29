@@ -32,7 +32,7 @@ export function KeyboardShortcutsHelp() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm animate-fade-in" style={{ background: 'var(--app-overlay)' }} onClick={() => setShow(false)}>
-      <div className="rounded-2xl p-6 shadow-xl w-80" style={{ background: 'var(--app-bg-card)', border: '1px solid var(--app-border)' }} onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-2xl p-6 shadow-xl w-80 animate-fade-in-scale" style={{ background: 'var(--app-bg-card)', border: '1px solid var(--app-border)' }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-slate-900">
             {locale === 'sv' ? 'Tangentbordsgenvägar' : 'Keyboard shortcuts'}

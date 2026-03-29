@@ -168,7 +168,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="relative shrink-0">
-                    <div className={`h-2.5 w-2.5 rounded-full ${statusColor}`} />
+                    <div className={`h-2.5 w-2.5 rounded-full ${statusColor} ${!isMuted && !hasError && !isWaiting && u.active ? 'status-active' : ''}`} />
                     {isWaiting && !isMuted && (
                       <div className="absolute inset-0 h-2.5 w-2.5 rounded-full bg-amber-500 animate-ping opacity-40" />
                     )}
