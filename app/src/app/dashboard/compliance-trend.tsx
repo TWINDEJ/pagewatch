@@ -37,7 +37,7 @@ export function ComplianceTrend({ data }: { data: TrendRow[] }) {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-xl glass-card overflow-hidden divide-y divide-white/[0.03]">
+      <div className="rounded-xl glass-card overflow-hidden divide-y divide-slate-100">
         {sources.map((source) => {
           const actionPct = (source.actionRequired / source.total) * 100;
           const reviewPct = (source.review / source.total) * 100;
@@ -47,18 +47,18 @@ export function ComplianceTrend({ data }: { data: TrendRow[] }) {
           return (
             <div key={source.name} className="px-4 py-3 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-300 truncate">{source.name}</span>
+                <span className="text-sm font-medium text-slate-700 truncate">{source.name}</span>
                 <div className="flex items-center gap-2 text-xs shrink-0">
                   <span className="text-slate-500">
                     {source.total} {locale === 'sv' ? 'ändringar' : 'changes'}
                   </span>
                   {source.actionRequired > 0 && (
-                    <span className="text-red-400 font-medium">{source.actionRequired} {locale === 'sv' ? 'åtgärd' : 'action'}</span>
+                    <span className="text-red-600 font-medium">{source.actionRequired} {locale === 'sv' ? 'åtgärd' : 'action'}</span>
                   )}
                 </div>
               </div>
               {/* Stacked bar */}
-              <div className="h-2 rounded-full bg-white/5 overflow-hidden" style={{ width: `${barWidth}%` }}>
+              <div className="h-2 rounded-full bg-slate-100 overflow-hidden" style={{ width: `${barWidth}%` }}>
                 <div className="h-full flex">
                   {actionPct > 0 && <div className="bg-red-500 transition-all duration-500" style={{ width: `${actionPct}%` }} />}
                   {reviewPct > 0 && <div className="bg-amber-500 transition-all duration-500" style={{ width: `${reviewPct}%` }} />}

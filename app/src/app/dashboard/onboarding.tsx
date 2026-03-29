@@ -26,10 +26,10 @@ export function Onboarding() {
   return (
     <div className="rounded-2xl glass-card p-8">
       <div className="text-center mb-8">
-        <h2 className="text-xl font-bold text-white">
+        <h2 className="text-xl font-bold text-slate-900">
           {locale === 'sv' ? 'Välkommen till changebrief' : 'Welcome to changebrief'}
         </h2>
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-slate-600">
           {locale === 'sv' ? 'Tre steg för att börja bevaka webbsidor.' : 'Three steps to start monitoring web pages.'}
         </p>
       </div>
@@ -37,13 +37,13 @@ export function Onboarding() {
       <div className="grid gap-6 sm:grid-cols-3">
         {steps.map((step, i) => (
           <div key={i} className="text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
               {step.icon}
             </div>
-            <div className="mb-1 text-xs font-semibold uppercase tracking-widest text-blue-400/70">
+            <div className="mb-1 text-xs font-semibold uppercase tracking-widest text-blue-600">
               {locale === 'sv' ? `Steg ${i + 1}` : `Step ${i + 1}`}
             </div>
-            <h3 className="text-sm font-semibold text-white">{step.title[locale]}</h3>
+            <h3 className="text-sm font-semibold text-slate-900">{step.title[locale]}</h3>
             <p className="mt-1 text-xs text-slate-500 leading-relaxed">{step.desc[locale]}</p>
           </div>
         ))}

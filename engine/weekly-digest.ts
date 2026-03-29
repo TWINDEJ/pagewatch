@@ -16,6 +16,8 @@ interface ChangeRow {
   jurisdiction: string | null;
   document_type: string | null;
   compliance_action: string | null;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
 }
 
 interface UserDigest {
@@ -37,7 +39,7 @@ async function getUsersWithDigest(): Promise<UserDigest[]> {
   for (const user of users.rows) {
     // Get changes from the past 7 days with a summary (significant changes only)
     const changes = await db.execute({
-      sql: `SELECT url, name, summary, importance, change_percent, checked_at, jurisdiction, document_type, compliance_action
+      sql: `SELECT url, name, summary, importance, change_percent, checked_at, jurisdiction, document_type, compliance_action, reviewed_at, reviewed_by
             FROM change_history
             WHERE user_id = ? AND summary IS NOT NULL AND checked_at >= datetime('now', '-7 days')
             ORDER BY importance DESC, checked_at DESC`,
@@ -68,6 +70,7 @@ function buildComplianceSection(complianceChanges: ChangeRow[]): string {
 
   const actionRequired = complianceChanges.filter(c => c.compliance_action === 'action_required');
   const review = complianceChanges.filter(c => c.compliance_action === 'review_recommended');
+  const unreviewed = complianceChanges.filter(c => !c.reviewed_at);
 
   const rows = complianceChanges.slice(0, 8).map(c => {
     const actionColor = c.compliance_action === 'action_required' ? '#ef4444'
@@ -77,12 +80,16 @@ function buildComplianceSection(complianceChanges: ChangeRow[]): string {
     const juris = c.jurisdiction ? `[${c.jurisdiction}]` : '';
     const docType = c.document_type || '';
 
+    const reviewedTag = c.reviewed_at
+      ? `<span style="color: #10b981; font-size: 11px; margin-left: 8px;">✓ Reviewed${c.reviewed_by ? ` by ${c.reviewed_by.split('@')[0]}` : ''}</span>`
+      : '';
+
     return `
       <tr>
         <td style="padding: 10px 16px; border-bottom: 1px solid #1e293b;">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
             <span style="color: ${actionColor}; font-size: 12px; font-weight: 600;">${actionLabel}</span>
-            <span style="color: #475569; font-size: 11px;">${juris} ${docType}</span>
+            <span style="color: #475569; font-size: 11px;">${juris} ${docType}</span>${reviewedTag}
           </div>
           <strong style="color: #f1f5f9; font-size: 14px;">${c.name}</strong>
           <p style="margin: 2px 0 0; color: #94a3b8; font-size: 13px;">${c.summary || ''}</p>
@@ -97,6 +104,7 @@ function buildComplianceSection(complianceChanges: ChangeRow[]): string {
         <h3 style="color: #f1f5f9; font-size: 14px; margin: 0;">⚖️ Regulatory Changes</h3>
         ${actionRequired.length > 0 ? `<span style="background: rgba(239,68,68,0.15); color: #ef4444; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">${actionRequired.length} action required</span>` : ''}
         ${review.length > 0 ? `<span style="background: rgba(245,158,11,0.15); color: #f59e0b; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">${review.length} to review</span>` : ''}
+        ${unreviewed.length > 0 ? `<span style="background: rgba(100,116,139,0.15); color: #94a3b8; padding: 2px 8px; border-radius: 12px; font-size: 11px;">${unreviewed.length} pending review</span>` : ''}
       </div>
       <table style="width: 100%; border-collapse: collapse;">${rows}</table>
     </div>`;

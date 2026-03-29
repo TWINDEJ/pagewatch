@@ -5,12 +5,18 @@ interface Props {
   title?: string;
   description?: string;
   lang?: string;
+  canonical?: string;
+  hreflang?: { lang: string; href: string }[];
+  structuredData?: object;
 }
 
 const {
   title = "changebrief — See what changed, not just that something changed",
   description = "changebrief monitors web pages and uses AI to tell you exactly what happened. No blurry screenshots. No red pixels. Just a clear sentence.",
-  lang = "en"
+  lang = "en",
+  canonical,
+  hreflang,
+  structuredData,
 } = Astro.props;
 ---
 
@@ -45,9 +51,18 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
 
+    {canonical && <link rel="canonical" href={canonical} />}
+    {hreflang && hreflang.map(h => (
+      <link rel="alternate" hreflang={h.lang} href={h.href} />
+    ))}
+
+    {structuredData && (
+      <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    )}
+
     <title>{title}</title>
   </head>
-  <body class="bg-[#06080f] text-white antialiased" style="font-family: 'Inter', system-ui, sans-serif;">
+  <body class="bg-white text-slate-900 antialiased" style="font-family: 'Inter', system-ui, sans-serif;">
     <slot />
   </body>
 </html>

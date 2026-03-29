@@ -88,6 +88,19 @@ async function sendNotifications(row: any, analysis: any, diffPercent: number) {
     return;
   }
 
+  // Respect per-action-level notification preferences
+  if (analysis.complianceAction) {
+    const actionPrefs: Record<string, number> = {
+      action_required: Number(row.notify_action_required ?? 1),
+      review_recommended: Number(row.notify_review_recommended ?? 1),
+      info_only: Number(row.notify_info_only ?? 0),
+    };
+    if (!actionPrefs[analysis.complianceAction]) {
+      console.log(`  → Notifications disabled for ${analysis.complianceAction}, skipping`);
+      return;
+    }
+  }
+
   const promises: Promise<void>[] = [];
 
   // Email notification
@@ -303,7 +316,7 @@ async function main() {
   await initSchema();
 
   const result = await db.execute({
-    sql: 'SELECT wu.*, u.email, u.plan, u.notify_email, u.slack_webhook_url FROM watched_urls wu JOIN users u ON wu.user_id = u.id WHERE wu.active = 1 AND (wu.muted IS NULL OR wu.muted = 0)',
+    sql: 'SELECT wu.*, u.email, u.plan, u.notify_email, u.slack_webhook_url, u.notify_action_required, u.notify_review_recommended, u.notify_info_only FROM watched_urls wu JOIN users u ON wu.user_id = u.id WHERE wu.active = 1 AND (wu.muted IS NULL OR wu.muted = 0)',
     args: []
   });
 
@@ -337,11 +350,15 @@ async function main() {
 
       // Notify user after 3 consecutive failures
       if (consecutive === 3 && row.notify_email && row.email) {
+        const isCompliance = !!row.category;
+        const summary = isCompliance
+          ? `⚠️ Compliance monitoring alert: "${row.name}" has failed 3 checks in a row. Error: ${errorMsg}. This may affect your regulatory coverage — please verify the URL is still correct.`
+          : `This page has failed 3 checks in a row: ${errorMsg}`;
         await sendEmailNotification(
           row.email as string,
           row.name as string,
           row.url as string,
-          { summary: `This page has failed 3 checks in a row: ${errorMsg}`, importance: 6, changedElements: ['Page unreachable'], hasSignificantChange: false }
+          { summary, importance: isCompliance ? 8 : 6, changedElements: ['Page unreachable'], hasSignificantChange: false }
         );
       }
     }

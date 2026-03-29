@@ -103,8 +103,8 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
 
   if (urls.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/5 p-12 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-800">
+      <div className="rounded-2xl border border-dashed border-slate-200 p-12 text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
           <svg className="h-6 w-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
@@ -114,14 +114,14 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
             />
           </svg>
         </div>
-        <p className="text-sm font-medium text-slate-400">{t('urls.empty')}</p>
+        <p className="text-sm font-medium text-slate-600">{t('urls.empty')}</p>
         <p className="mt-1 text-xs text-slate-600">{t('urls.empty.desc')}</p>
       </div>
     );
   }
 
   const sortBtnCls = (key: SortKey) =>
-    `cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${sort === key ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`;
+    `cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${sort === key ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:text-slate-700'}`;
 
   return (
     <>
@@ -159,7 +159,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
           return (
             <div
               key={u.id}
-              className={`rounded-xl glass-card p-4 flex flex-col gap-2 cursor-pointer transition-all duration-300 ${isMuted ? 'opacity-50' : ''} ${isExpanded ? 'ring-1 ring-blue-500/20 sm:col-span-2' : 'hover:bg-white/[0.02]'}`}
+              className={`rounded-xl glass-card p-4 flex flex-col gap-2 cursor-pointer transition-all duration-300 ${isMuted ? 'opacity-50' : ''} ${isExpanded ? 'ring-1 ring-blue-300 sm:col-span-2' : 'hover:bg-slate-50'}`}
               onClick={() => setExpandedId(isExpanded ? null : u.id)}
             >
               {/* Top row: status + name + actions */}
@@ -172,7 +172,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{u.name}</p>
+                    <p className="text-sm font-medium text-slate-900 truncate">{u.name}</p>
                     <p className="text-xs text-slate-600 truncate">{u.url}</p>
                   </div>
                 </div>
@@ -185,7 +185,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
                     onClick={(e) => { e.stopPropagation(); handleMute(u.id, u.name, !isMuted); }}
                     disabled={muting === u.id}
                     title={isMuted ? t('monitor.unmute') : t('monitor.mute')}
-                    className="cursor-pointer p-1 text-slate-600 transition hover:text-blue-400 disabled:opacity-30"
+                    className="cursor-pointer p-1 text-slate-600 transition hover:text-blue-600 disabled:opacity-30"
                   >
                     {muting === u.id ? (
                       <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -207,7 +207,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
                   <button
                     onClick={(e) => { e.stopPropagation(); handleRemove(u.id, u.name); }}
                     disabled={removing === u.id}
-                    className="cursor-pointer p-1 text-slate-600 transition hover:text-red-400 disabled:opacity-30"
+                    className="cursor-pointer p-1 text-slate-600 transition hover:text-red-600 disabled:opacity-30"
                   >
                     {removing === u.id ? (
                       <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -226,7 +226,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
               {/* Status line */}
               <div className="flex items-center gap-2 flex-wrap">
                 {isWaiting && !isMuted && (
-                  <span className="text-xs text-amber-400/70">{t('urls.waiting')}</span>
+                  <span className="text-xs text-amber-600">{t('urls.waiting')}</span>
                 )}
                 {u.last_checked_at && !hasError && !isMuted && (
                   <span className="text-xs text-slate-600">
@@ -234,7 +234,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
                   </span>
                 )}
                 {hasError && !isMuted && (
-                  <span className="text-xs text-red-400/80">
+                  <span className="text-xs text-red-600">
                     {t('urls.failed')} {u.consecutive_errors}x
                   </span>
                 )}
@@ -243,26 +243,26 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
               {/* Badges */}
               <div className="flex items-center gap-1.5 flex-wrap">
                 {isMuted && (
-                  <span className="rounded bg-slate-500/15 px-2 py-0.5 text-xs text-slate-400">
+                  <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
                     {t('monitor.muted')}
                   </span>
                 )}
                 {u.selector && (
-                  <span className="rounded bg-white/5 px-2 py-0.5 text-xs text-slate-400">
+                  <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
                     {u.selector}
                   </span>
                 )}
                 {u.mobile === 1 && (
-                  <span className="rounded bg-white/5 px-2 py-0.5 text-xs text-slate-400">mobile</span>
+                  <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600">mobile</span>
                 )}
                 {(u.cookies || u.headers) && (
-                  <span className="rounded bg-amber-500/10 px-2 py-0.5 text-xs text-amber-400">auth</span>
+                  <span className="rounded bg-amber-50 px-2 py-0.5 text-xs text-amber-600">auth</span>
                 )}
               </div>
 
               {/* Last change summary */}
               {u.last_summary && !hasError && !isMuted && (
-                <p className={`text-xs text-slate-400 leading-relaxed ${isExpanded ? '' : 'line-clamp-1'}`}>{u.last_summary}</p>
+                <p className={`text-xs text-slate-600 leading-relaxed ${isExpanded ? '' : 'line-clamp-1'}`}>{u.last_summary}</p>
               )}
               {!u.last_summary && u.last_checked_at && !hasError && !isMuted && (
                 <p className="text-xs text-slate-600 flex items-center gap-1.5">
@@ -275,28 +275,28 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
 
               {/* Expanded details */}
               {isExpanded && (
-                <div className="mt-2 pt-3 border-t border-white/5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs animate-fade-in">
+                <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs animate-fade-in">
                   <div>
-                    <span className="text-slate-600 block">{locale === 'sv' ? 'Tröskel' : 'Threshold'}</span>
-                    <span className="text-slate-400">{u.threshold}%</span>
+                    <span className="text-slate-500 block">{locale === 'sv' ? 'Tröskel' : 'Threshold'}</span>
+                    <span className="text-slate-700">{u.threshold}%</span>
                   </div>
                   <div>
-                    <span className="text-slate-600 block">{locale === 'sv' ? 'Min. vikt' : 'Min. importance'}</span>
-                    <span className="text-slate-400">{(u as any).min_importance ?? 5}/10</span>
+                    <span className="text-slate-500 block">{locale === 'sv' ? 'Min. vikt' : 'Min. importance'}</span>
+                    <span className="text-slate-700">{(u as any).min_importance ?? 5}/10</span>
                   </div>
                   <div>
-                    <span className="text-slate-600 block">{locale === 'sv' ? 'Viewport' : 'Viewport'}</span>
-                    <span className="text-slate-400">{u.mobile ? 'Mobile' : 'Desktop'}</span>
+                    <span className="text-slate-500 block">{locale === 'sv' ? 'Viewport' : 'Viewport'}</span>
+                    <span className="text-slate-700">{u.mobile ? 'Mobile' : 'Desktop'}</span>
                   </div>
                   {u.last_importance != null && u.last_importance > 0 && (
                     <div>
-                      <span className="text-slate-600 block">{locale === 'sv' ? 'Senaste vikt' : 'Last importance'}</span>
-                      <span className={`font-medium ${u.last_importance >= 7 ? 'text-red-400' : u.last_importance >= 4 ? 'text-orange-400' : 'text-green-400'}`}>{u.last_importance}/10</span>
+                      <span className="text-slate-500 block">{locale === 'sv' ? 'Senaste vikt' : 'Last importance'}</span>
+                      <span className={`font-medium ${u.last_importance >= 7 ? 'text-red-600' : u.last_importance >= 4 ? 'text-orange-600' : 'text-green-600'}`}>{u.last_importance}/10</span>
                     </div>
                   )}
                   <div className="col-span-2 sm:col-span-4">
                     <a href={u.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-                      className="text-blue-400/70 hover:text-blue-300 transition break-all">
+                      className="text-blue-600 hover:text-blue-700 transition break-all">
                       {u.url}
                     </a>
                   </div>

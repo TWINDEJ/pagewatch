@@ -125,8 +125,8 @@ export const landing = {
   'reg.feat.doctype.p': { en: 'AI identifies whether the change is a regulation, guidance, consultation, decision, or standard — so you know how to prioritize.', sv: 'AI identifierar om ändringen gäller en föreskrift, vägledning, remiss, beslut eller standard — så ni vet hur den ska prioriteras.' },
   'reg.feat.audit.h': { en: 'Compliance audit trail', sv: 'Compliance audit trail' },
   'reg.feat.audit.p': { en: 'Every detected change timestamped and archived. Export filtered CSV for auditors — by jurisdiction, document type, or action level.', sv: 'Varje detekterad ändring tidsstämplas och arkiveras. Exportera filtrerad CSV till revisorer — per jurisdiktion, dokumenttyp eller åtgärdsnivå.' },
-  'reg.feat.pre.h': { en: '50+ agencies pre-configured', sv: '50+ myndigheter förkonfigurerade' },
-  'reg.feat.pre.p': { en: 'One-click add Swedish and EU agencies: Finansinspektionen, IMY, Socialstyrelsen, EBA, ESMA, EDPB, EMA, and more.', sv: 'Lägg till svenska och EU-myndigheter med ett klick: Finansinspektionen, IMY, Socialstyrelsen, EBA, ESMA, EDPB, EMA med flera.' },
+  'reg.feat.pre.h': { en: '60+ agencies across 5 countries', sv: '60+ myndigheter i 5 länder' },
+  'reg.feat.pre.p': { en: 'One-click add Nordic, EU, and US agencies: Finansinspektionen, IMY, Socialstyrelsen, EBA, ESMA, EDPB, EMA, SEC, NIST, and more.', sv: 'Lägg till nordiska, EU- och amerikanska myndigheter med ett klick: Finansinspektionen, IMY, Socialstyrelsen, EBA, ESMA, EDPB, EMA, SEC, NIST med flera.' },
   'reg.feat.sector.h': { en: 'Sector-based watchlists', sv: 'Branschbaserade bevakningslistor' },
   'reg.feat.sector.p': { en: 'Pre-built lists for finance, health, transport, data privacy, environment, and labor. Add an entire sector in seconds.', sv: 'Färdiga listor för finans, hälsa, transport, dataskydd, miljö och arbetsmarknad. Lägg till en hel sektor på sekunder.' },
 
@@ -149,6 +149,66 @@ export const landing = {
   'reg.footer.h2b': { en: 'Let AI watch', sv: 'Låt AI bevaka' },
   'reg.footer.h2c': { en: 'the regulators.', sv: 'myndigheterna.' },
   'reg.footer.sub': { en: 'Free to start. Monitor 3 agencies at no cost. Upgrade when you need more.', sv: 'Gratis att börja. Bevaka 3 myndigheter utan kostnad. Uppgradera när du behöver mer.' },
+
+  // ─── Why changebrief ───
+  'reg.why.h2': { en: 'Why compliance teams switch from traditional tools', sv: 'Varför compliance-team byter från traditionella verktyg' },
+  'reg.why.web.h': { en: 'We monitor websites, not just law text', sv: 'Vi bevakar webbsidor, inte bara lagtext' },
+  'reg.why.web.p': { en: 'Regulatory changes often appear on agency websites as updated guidance, new forms, or changed requirements — days before formal publication. changebrief catches these visual changes in real time.', sv: 'Regulatoriska förändringar syns ofta på myndigheters webbsidor som uppdaterade vägledningar, nya formulär eller ändrade krav — dagar före formell publicering. changebrief fångar dessa visuella förändringar i realtid.' },
+  'reg.why.ai.h': { en: 'AI analysis in seconds, not days', sv: 'AI-analys på sekunder, inte dagar' },
+  'reg.why.ai.p': { en: 'Traditional tools rely on jurists to manually summarize changes. changebrief uses GPT-4o Vision to analyze and classify every change automatically — with consistent quality at any scale.', sv: 'Traditionella verktyg förlitar sig på jurister som manuellt sammanfattar ändringar. changebrief använder GPT-4o Vision för att analysera och klassificera varje ändring automatiskt — med konsekvent kvalitet i alla skalor.' },
+  'reg.why.open.h': { en: 'Open platform, 9+ integrations', sv: 'Öppen plattform, 9+ integrationer' },
+  'reg.why.open.p': { en: 'Slack, Microsoft Teams, Discord, PagerDuty, Jira, email, RSS feeds, webhooks, and CSV export. changebrief plugs into the tools your team already uses.', sv: 'Slack, Microsoft Teams, Discord, PagerDuty, Jira, e-post, RSS-flöden, webhooks och CSV-export. changebrief kopplar in i de verktyg ert team redan använder.' },
+  'reg.why.api.h': { en: 'API-first, not a closed system', sv: 'API-first, inte ett slutet system' },
+  'reg.why.api.p': { en: 'REST API, RSS feeds with jurisdiction filters, CSV audit export, webhook payloads. Build your own integrations or connect to Zapier, Make, and n8n.', sv: 'REST API, RSS-flöden med jurisdiktionsfilter, CSV audit-export, webhook-payloads. Bygg egna integrationer eller koppla till Zapier, Make och n8n.' },
+
+  // ─── ISO section ───
+  'reg.iso.h2': { en: 'Built for ISO-certified organizations', sv: 'Byggd för ISO-certifierade organisationer' },
+  'reg.iso.sub': { en: 'Whether you maintain ISO 14001, ISO 45001, or ISO 9001 — changebrief gives you the audit trail and acknowledgment workflow your certification requires.', sv: 'Oavsett om ni arbetar med ISO 14001, ISO 45001 eller ISO 9001 — changebrief ger er den audit trail och kvittenshantering som er certifiering kräver.' },
+  'reg.iso.audit.h': { en: 'Audit-ready compliance trail', sv: 'Revisionsklar compliance trail' },
+  'reg.iso.audit.p': { en: 'Every detected change timestamped and archived. Export filtered CSV reports for auditors — by jurisdiction, document type, or action level.', sv: 'Varje detekterad ändring tidsstämplad och arkiverad. Exportera filtrerade CSV-rapporter till revisorer — per jurisdiktion, dokumenttyp eller åtgärdsnivå.' },
+  'reg.iso.kvittens.h': { en: 'Acknowledgment workflow', sv: 'Kvittenshantering' },
+  'reg.iso.kvittens.p': { en: 'Mark changes as reviewed with user attribution and optional notes. Full audit trail of who reviewed what and when — evidence your auditor can verify.', sv: 'Markera ändringar som granskade med användarattribution och valfria anteckningar. Komplett audit trail över vem som granskade vad och när — bevis som er revisor kan verifiera.' },
+  'reg.iso.overview.h': { en: 'Real-time regulatory overview', sv: 'Regulatorisk översikt i realtid' },
+  'reg.iso.overview.p': { en: 'See all monitored authorities in one table: last change, action level, review status. Sortable, filterable, printable for board meetings.', sv: 'Se alla bevakade myndigheter i en tabell: senaste ändring, åtgärdsnivå, granskningsstatus. Sorterbar, filtrerbar, utskriftsvänlig för styrelsemöten.' },
+
+  // ─── Beyond legislation ───
+  'reg.beyond.h2': { en: 'Beyond legislation: what text tools miss', sv: 'Bortom lagtext: vad textbaserade verktyg missar' },
+  'reg.beyond.visual.h': { en: 'Visual changes on government websites', sv: 'Visuella förändringar på myndighetssidor' },
+  'reg.beyond.visual.p': { en: 'New guidance documents, updated forms, changed requirements — all caught by AI-powered visual monitoring before they become formal publications.', sv: 'Nya vägledningsdokument, uppdaterade formulär, ändrade krav — allt fångat av AI-driven visuell bevakning innan de blir formella publiceringar.' },
+  'reg.beyond.guidance.h': { en: 'Guidance and interpretive notices', sv: 'Vägledningar och tolkningsbesked' },
+  'reg.beyond.guidance.p': { en: 'Not just SFS and FFFS — we monitor the practical guidance that shapes how regulations are applied in your industry.', sv: 'Inte bara SFS och FFFS — vi bevakar den praktiska vägledning som styr hur regler tillämpas i er bransch.' },
+  'reg.beyond.intl.h': { en: 'International coverage beyond the Nordics', sv: 'Internationell täckning bortom Norden' },
+  'reg.beyond.intl.p': { en: 'Monitor EU agencies (EBA, ESMA, EDPB, EMA), US regulators (SEC, NIST), and more. One dashboard for all your jurisdictions.', sv: 'Bevaka EU-myndigheter (EBA, ESMA, EDPB, EMA), amerikanska tillsynsmyndigheter (SEC, NIST) och fler. En dashboard för alla era jurisdiktioner.' },
+
+  // ─── Numbers strip ───
+  'reg.proof.authorities': { en: '60+ authorities', sv: '60+ myndigheter' },
+  'reg.proof.sectors': { en: '8 sectors', sv: '8 sektorer' },
+  'reg.proof.countries': { en: '5 countries', sv: '5 länder' },
+  'reg.proof.integrations': { en: '9 integrations', sv: '9 integrationer' },
+
+  // ─── Compliance FAQ ───
+  // ─── How it works (compliance) ───
+  'reg.how.h2': { en: 'How it works', sv: 'Så fungerar det' },
+  'reg.how.sub': { en: 'From setup to compliance insights in under 60 seconds.', sv: 'Från setup till compliance-insikter på under 60 sekunder.' },
+  'reg.how.s1': { en: 'Step 1', sv: 'Steg 1' },
+  'reg.how.s1.h': { en: 'Pick your authorities', sv: 'Välj era myndigheter' },
+  'reg.how.s1.p': { en: 'Select jurisdiction and sector — we recommend 60+ pre-configured agencies across Sweden, Denmark, Norway, Finland, the EU, and the US.', sv: 'Välj jurisdiktion och sektor — vi rekommenderar 60+ förkonfigurerade myndigheter i Sverige, Danmark, Norge, Finland, EU och USA.' },
+  'reg.how.s2': { en: 'Step 2', sv: 'Steg 2' },
+  'reg.how.s2.h': { en: 'AI monitors 24/7', sv: 'AI bevakar dygnet runt' },
+  'reg.how.s2.p': { en: 'Every 6 hours, our AI takes screenshots, detects changes, and classifies them: action required, review recommended, or info only.', sv: 'Var 6:e timme tar vår AI screenshots, upptäcker ändringar och klassificerar dem: åtgärd krävs, granskning rekommenderas, eller bara info.' },
+  'reg.how.s3': { en: 'Step 3', sv: 'Steg 3' },
+  'reg.how.s3.h': { en: 'Review and comply', sv: 'Granska och agera' },
+  'reg.how.s3.p': { en: 'Get notified via Slack, email, or Teams. Mark changes as reviewed with your name. Export audit trails for your ISO auditor.', sv: 'Bli notifierad via Slack, e-post eller Teams. Markera ändringar som granskade med ditt namn. Exportera audit trails till er ISO-revisor.' },
+
+  'reg.faq.h2': { en: 'Questions from compliance teams', sv: 'Frågor från compliance-team' },
+  'reg.faq.q1': { en: 'How is changebrief different from Notisum or other law monitoring tools?', sv: 'Hur skiljer sig changebrief från Notisum eller andra lagbevakningsverktyg?' },
+  'reg.faq.a1': { en: 'Traditional tools monitor law text in legal databases. changebrief monitors the actual websites where changes appear first — agency guidance pages, updated forms, new consultation documents. We use AI vision to detect and classify these changes in real time, not manual jurist reviews. Plus we\'re API-first with 9+ integrations (Slack, Teams, Jira, PagerDuty, RSS, webhooks).', sv: 'Traditionella verktyg bevakar lagtext i juridiska databaser. changebrief bevakar de faktiska webbsidorna där ändringar syns först — myndigheters vägledningssidor, uppdaterade formulär, nya remisser. Vi använder AI-vision för att upptäcka och klassificera dessa ändringar i realtid, inte manuella juristgranskningar. Dessutom är vi API-first med 9+ integrationer (Slack, Teams, Jira, PagerDuty, RSS, webhooks).' },
+  'reg.faq.q2': { en: 'Can I use changebrief for ISO 14001/45001 compliance?', sv: 'Kan jag använda changebrief för ISO 14001/45001-efterlevnad?' },
+  'reg.faq.a2': { en: 'Yes. changebrief provides timestamped audit trails, reviewer attribution (who reviewed what and when), and CSV export — all evidence your ISO auditor needs. The acknowledgment workflow tracks that every regulatory change has been reviewed by the responsible person.', sv: 'Ja. changebrief ger tidsstämplade audit trails, granskningsattribution (vem som granskade vad och när) och CSV-export — alla bevis er ISO-revisor behöver. Kvittensflödet spårar att varje regeländring har granskats av ansvarig person.' },
+  'reg.faq.q3': { en: 'Which countries and authorities do you cover?', sv: 'Vilka länder och myndigheter täcker ni?' },
+  'reg.faq.a3': { en: 'We have 60+ pre-configured authorities across Sweden, Denmark, Norway, Finland, the EU, and the US. This includes Finansinspektionen, IMY, Transportstyrelsen, EBA, ESMA, EDPB, SEC, and many more. You can also add any custom URL — if it has a webpage, we can monitor it.', sv: 'Vi har 60+ förkonfigurerade myndigheter i Sverige, Danmark, Norge, Finland, EU och USA. Det inkluderar Finansinspektionen, IMY, Transportstyrelsen, EBA, ESMA, EDPB, SEC och många fler. Du kan också lägga till valfri URL — om den har en webbsida kan vi bevaka den.' },
+  'reg.faq.q4': { en: 'How often are pages checked?', sv: 'Hur ofta kontrolleras sidorna?' },
+  'reg.faq.a4': { en: 'Every 6 hours, 24/7. When a change is detected, you\'re notified immediately via your chosen channels (email, Slack, Teams, etc.). Weekly/daily digest summaries are also available.', sv: 'Var 6:e timme, dygnet runt. När en ändring upptäcks notifieras du direkt via dina valda kanaler (e-post, Slack, Teams etc.). Vecko-/dagliga sammanfattningar finns också tillgängliga.' },
 } as const;
 
 export type LandingKey = keyof typeof landing;

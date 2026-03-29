@@ -41,7 +41,7 @@ export function LanguageSwitcher() {
   return (
     <button
       onClick={() => setLocale(locale === 'en' ? 'sv' : 'en')}
-      className="cursor-pointer rounded-lg bg-white/5 px-2 py-1 text-xs font-medium text-slate-400 hover:text-white hover:bg-white/10 transition-all duration-200"
+      className="cursor-pointer rounded-lg bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all duration-200"
       title={locale === 'en' ? 'Byt till svenska' : 'Switch to English'}
     >
       {locale === 'en' ? 'SV' : 'EN'}

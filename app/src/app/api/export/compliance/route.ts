@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     limit: 10000,
   }) as any[];
 
-  const csvHeader = 'timestamp,url,source,jurisdiction,document_type,compliance_action,importance,summary,changed_elements';
+  const csvHeader = 'timestamp,url,source,jurisdiction,document_type,compliance_action,importance,summary,changed_elements,reviewed_at,reviewed_by,review_note';
   const csvRows = history.map((row) => {
     const esc = (s: string) => `"${(s || '').replace(/"/g, '""')}"`;
     return [
@@ -34,6 +34,9 @@ export async function GET(req: NextRequest) {
       row.importance ?? '',
       esc(row.summary),
       esc(row.changed_elements),
+      row.reviewed_at || '',
+      esc(row.reviewed_by),
+      esc(row.review_note),
     ].join(',');
   });
 

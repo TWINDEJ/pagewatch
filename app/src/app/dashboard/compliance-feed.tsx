@@ -14,20 +14,27 @@ interface ComplianceEntry {
   jurisdiction: string | null;
   document_type: string | null;
   compliance_action: string | null;
+  reviewed_at: string | null;
 }
 
 type ActionFilter = 'all' | 'action_required' | 'review_recommended' | 'info_only';
 
 const actionColors: Record<string, { badge: string; dot: string }> = {
-  action_required: { badge: 'text-red-400 bg-red-500/15', dot: 'bg-red-500' },
-  review_recommended: { badge: 'text-amber-400 bg-amber-500/15', dot: 'bg-amber-500' },
-  info_only: { badge: 'text-slate-400 bg-slate-500/15', dot: 'bg-slate-500' },
+  action_required: { badge: 'text-red-700 bg-red-50', dot: 'bg-red-500' },
+  review_recommended: { badge: 'text-amber-700 bg-amber-50', dot: 'bg-amber-500' },
+  info_only: { badge: 'text-slate-600 bg-slate-100', dot: 'bg-slate-500' },
 };
 
 const actionLabels: Record<string, { en: string; sv: string }> = {
   action_required: { en: 'Action required', sv: 'Åtgärd krävs' },
   review_recommended: { en: 'Review recommended', sv: 'Granskning rekommenderas' },
   info_only: { en: 'Info only', sv: 'Endast information' },
+};
+
+const actionTooltips: Record<string, { en: string; sv: string }> = {
+  action_required: { en: 'This change likely requires you to take action — update a process, notify stakeholders, or adjust compliance.', sv: 'Denna ändring kräver sannolikt åtgärd — uppdatera en process, informera intressenter eller justera efterlevnad.' },
+  review_recommended: { en: 'This change should be reviewed to determine if it affects your operations. May not require immediate action.', sv: 'Denna ändring bör granskas för att avgöra om den påverkar er verksamhet. Kräver kanske inte omedelbar åtgärd.' },
+  info_only: { en: 'Informational change — format update, minor correction, or cosmetic change. Typically no action needed.', sv: 'Informationsändring — formatuppdatering, mindre korrigering eller kosmetisk ändring. Normalt ingen åtgärd krävs.' },
 };
 
 const docTypeLabels: Record<string, { en: string; sv: string }> = {
@@ -42,19 +49,25 @@ const docTypeLabels: Record<string, { en: string; sv: string }> = {
 function ActionBadge({ action, locale }: { action: string; locale: string }) {
   const colors = actionColors[action] || actionColors.info_only;
   const label = actionLabels[action]?.[locale as 'en' | 'sv'] || action;
+  const tooltip = actionTooltips[action]?.[locale as 'en' | 'sv'] || '';
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${colors.badge}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium cursor-help ${colors.badge}`}
+      title={tooltip}
+    >
       <span className={`h-1.5 w-1.5 rounded-full ${colors.dot}`} />
       {label}
     </span>
   );
 }
 
-export function ComplianceFeed({ history, plan = 'free' }: { history: ComplianceEntry[]; plan?: string }) {
+export function ComplianceFeed({ history: initialHistory, plan = 'free' }: { history: ComplianceEntry[]; plan?: string }) {
   const { locale } = useLocale();
+  const [history, setHistory] = useState(initialHistory);
   const [actionFilter, setActionFilter] = useState<ActionFilter>('all');
   const [jurisdictionFilter, setJurisdictionFilter] = useState<string>('');
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const [reviewing, setReviewing] = useState<number | null>(null);
 
   const jurisdictions = useMemo(() => {
     const set = new Set<string>();
@@ -86,6 +99,21 @@ export function ComplianceFeed({ history, plan = 'free' }: { history: Compliance
     });
   };
 
+  const markReviewed = async (changeId: number) => {
+    setReviewing(changeId);
+    const res = await fetch('/api/review', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ changeId }),
+    });
+    if (res.ok) {
+      setHistory((prev) =>
+        prev.map((e) => e.id === changeId ? { ...e, reviewed_at: new Date().toISOString() } : e)
+      );
+    }
+    setReviewing(null);
+  };
+
   const formatDate = (dateStr: string) =>
     new Date(dateStr + 'Z').toLocaleString(locale === 'sv' ? 'sv-SE' : 'en-US', {
       month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
@@ -93,43 +121,61 @@ export function ComplianceFeed({ history, plan = 'free' }: { history: Compliance
 
   if (history.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/5 p-12 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-800">
-          <svg className="h-6 w-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-          </svg>
+      <div className="space-y-4">
+        {/* Ghost preview — visar hur en compliance-ändring ser ut */}
+        <div className="rounded-xl border border-dashed border-slate-200 p-4 opacity-50 pointer-events-none">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+              {locale === 'sv' ? 'Åtgärd krävs' : 'Action required'}
+            </span>
+            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-mono text-slate-500">SE</span>
+            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-mono text-slate-500">{locale === 'sv' ? 'Föreskrift' : 'Regulation'}</span>
+          </div>
+          <p className="text-sm font-medium text-slate-700">Finansinspektionen</p>
+          <p className="text-sm text-slate-600 mt-1">
+            {locale === 'sv'
+              ? '"Nya krav på AML-rapportering publicerade. Ikraftträdande: 1 juli 2026."'
+              : '"New AML reporting requirements published. Effective date: July 1, 2026."'}
+          </p>
+          <div className="flex items-center gap-2 mt-2 text-xs text-slate-400">
+            <span className="rounded-full bg-red-50 px-1.5 py-0.5 text-red-500 font-medium">9/10</span>
+            <span>fi.se</span>
+          </div>
         </div>
-        <p className="text-sm font-medium text-slate-400">
-          {locale === 'sv' ? 'Inga regulatoriska ändringar ännu' : 'No regulatory changes yet'}
-        </p>
-        <p className="mt-1 text-xs text-slate-600">
-          {locale === 'sv'
-            ? 'Lägg till myndigheter under Upptäck för att börja bevaka regulatoriska ändringar.'
-            : 'Add government agencies from Discover to start monitoring regulatory changes.'}
-        </p>
+        <div className="text-center py-4">
+          <p className="text-sm font-medium text-slate-600">
+            {locale === 'sv' ? 'Så kommer dina regulatoriska ändringar att se ut' : 'This is what your regulatory changes will look like'}
+          </p>
+          <p className="mt-1 text-xs text-slate-500">
+            {locale === 'sv'
+              ? 'Lägg till myndigheter under Upptäck för att börja bevaka.'
+              : 'Add agencies from Discover below to start monitoring.'}
+          </p>
+        </div>
       </div>
     );
   }
 
   const filterBtnCls = (active: boolean) =>
-    `cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${active ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`;
+    `cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${active ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:text-slate-700'}`;
 
   return (
     <div className="space-y-3">
       {/* Stats strip */}
       <div className="flex gap-3">
         {actionCounts.action_required > 0 && (
-          <div className="flex items-center gap-1.5 rounded-lg bg-red-500/10 px-3 py-1.5">
+          <div className="flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5">
             <span className="h-2 w-2 rounded-full bg-red-500" />
-            <span className="text-xs font-medium text-red-400">{actionCounts.action_required}</span>
-            <span className="text-xs text-red-400/70">{locale === 'sv' ? 'kräver åtgärd' : 'need action'}</span>
+            <span className="text-xs font-medium text-red-600">{actionCounts.action_required}</span>
+            <span className="text-xs text-red-600/70">{locale === 'sv' ? 'kräver åtgärd' : 'need action'}</span>
           </div>
         )}
         {actionCounts.review_recommended > 0 && (
-          <div className="flex items-center gap-1.5 rounded-lg bg-amber-500/10 px-3 py-1.5">
+          <div className="flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-1.5">
             <span className="h-2 w-2 rounded-full bg-amber-500" />
-            <span className="text-xs font-medium text-amber-400">{actionCounts.review_recommended}</span>
-            <span className="text-xs text-amber-400/70">{locale === 'sv' ? 'att granska' : 'to review'}</span>
+            <span className="text-xs font-medium text-amber-600">{actionCounts.review_recommended}</span>
+            <span className="text-xs text-amber-600/70">{locale === 'sv' ? 'att granska' : 'to review'}</span>
           </div>
         )}
       </div>
@@ -153,7 +199,7 @@ export function ComplianceFeed({ history, plan = 'free' }: { history: Compliance
           <select
             value={jurisdictionFilter}
             onChange={(e) => setJurisdictionFilter(e.target.value)}
-            className="cursor-pointer rounded-lg bg-white/5 border border-white/5 px-3 py-1.5 text-xs text-slate-400 focus:outline-none ml-auto"
+            className="cursor-pointer rounded-lg bg-slate-50 border border-slate-200 px-3 py-1.5 text-xs text-slate-600 focus:outline-none ml-auto"
           >
             <option value="">{locale === 'sv' ? 'Alla jurisdiktioner' : 'All jurisdictions'}</option>
             {jurisdictions.map(j => (
@@ -162,18 +208,27 @@ export function ComplianceFeed({ history, plan = 'free' }: { history: Compliance
           </select>
         )}
 
-        {(plan === 'pro' || plan === 'team') && (
+        {(plan === 'pro' || plan === 'team') ? (
           <a
             href={`/api/export/compliance${jurisdictionFilter ? `?jurisdiction=${jurisdictionFilter}` : ''}${actionFilter !== 'all' ? `${jurisdictionFilter ? '&' : '?'}complianceAction=${actionFilter}` : ''}`}
-            className="cursor-pointer rounded-lg bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white transition"
+            className="cursor-pointer rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 transition"
           >
             {locale === 'sv' ? 'Exportera audit trail' : 'Export audit trail'}
+          </a>
+        ) : (
+          <a
+            href="https://buy.polar.sh/polar_cl_JDnQNmWBFMsJp56ntC0GPsweHhIizDVhwWGIk4CAFVF"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cursor-pointer rounded-lg bg-blue-50 border border-blue-100 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 transition"
+          >
+            {locale === 'sv' ? 'Uppgradera för CSV-export' : 'Upgrade for CSV export'}
           </a>
         )}
       </div>
 
       {/* Entries */}
-      <div className="rounded-xl glass-card overflow-hidden divide-y divide-white/[0.03]">
+      <div className="rounded-xl glass-card overflow-hidden divide-y divide-slate-100">
         {filtered.map((entry) => {
           const isOpen = expanded.has(entry.id);
           let elements: string[] = [];
@@ -188,23 +243,28 @@ export function ComplianceFeed({ history, plan = 'free' }: { history: Compliance
             <div key={entry.id}>
               <button
                 onClick={() => toggleExpand(entry.id)}
-                className="w-full cursor-pointer px-4 py-3 flex items-center gap-3 hover:bg-white/[0.02] transition text-left"
+                className="w-full cursor-pointer px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition text-left"
               >
-                <span className="text-xs text-slate-600 w-24 shrink-0">{formatDate(entry.checked_at)}</span>
+                <span className="text-xs text-slate-500 w-24 shrink-0">{formatDate(entry.checked_at)}</span>
                 {entry.compliance_action && (
                   <ActionBadge action={entry.compliance_action} locale={locale} />
                 )}
                 {entry.jurisdiction && (
-                  <span className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] font-mono text-slate-500 shrink-0">
+                  <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-mono text-slate-500 shrink-0">
                     {entry.jurisdiction}
                   </span>
                 )}
-                <span className="text-sm font-medium text-slate-300 shrink-0 max-w-[160px] truncate">{entry.name}</span>
-                <span className="text-sm text-slate-400 truncate flex-1 min-w-0">
+                <span className="text-sm font-medium text-slate-900 shrink-0 max-w-[160px] truncate">{entry.name}</span>
+                <span className="text-sm text-slate-600 truncate flex-1 min-w-0">
                   {entry.summary || (locale === 'sv' ? 'Ingen sammanfattning' : 'No summary')}
                 </span>
+                {entry.reviewed_at && (
+                  <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-600">
+                    ✓
+                  </span>
+                )}
                 <svg
-                  className={`h-3.5 w-3.5 shrink-0 text-slate-600 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                  className={`h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                   fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -214,24 +274,24 @@ export function ComplianceFeed({ history, plan = 'free' }: { history: Compliance
               {isOpen && (
                 <div className="px-4 pb-3 pt-0 ml-28 space-y-2">
                   {entry.summary && (
-                    <p className="text-sm text-slate-300 leading-relaxed">{entry.summary}</p>
+                    <p className="text-sm text-slate-700 leading-relaxed">{entry.summary}</p>
                   )}
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
                     {entry.importance != null && entry.importance > 0 && (
                       <span className={`rounded-full px-1.5 py-0.5 font-medium ${
-                        entry.importance >= 7 ? 'text-red-400 bg-red-500/20'
-                          : entry.importance >= 4 ? 'text-orange-400 bg-orange-500/20'
-                          : 'text-green-400 bg-green-500/20'
+                        entry.importance >= 7 ? 'text-red-600 bg-red-50'
+                          : entry.importance >= 4 ? 'text-orange-600 bg-orange-50'
+                          : 'text-green-600 bg-green-50'
                       }`}>
                         {entry.importance}/10
                       </span>
                     )}
                     {docLabel && (
-                      <span className="rounded bg-white/5 px-2 py-0.5 text-slate-400">{docLabel}</span>
+                      <span className="rounded bg-slate-100 px-2 py-0.5 text-slate-600">{docLabel}</span>
                     )}
                     <a
                       href={entry.url} target="_blank" rel="noopener noreferrer"
-                      className="text-blue-400/70 hover:text-blue-300 transition"
+                      className="text-blue-600/70 hover:text-blue-500 transition"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {entry.url}
@@ -240,17 +300,37 @@ export function ComplianceFeed({ history, plan = 'free' }: { history: Compliance
                   {elements.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {elements.map((el, i) => (
-                        <span key={i} className="rounded-md bg-white/5 px-2 py-0.5 text-xs text-slate-400">{el}</span>
+                        <span key={i} className="rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{el}</span>
                       ))}
                     </div>
                   )}
+                  <div className="flex items-center gap-3 pt-1">
+                    {!entry.reviewed_at ? (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          markReviewed(entry.id);
+                        }}
+                        disabled={reviewing === entry.id}
+                        className="text-xs text-emerald-600/70 hover:text-emerald-600 transition cursor-pointer disabled:opacity-50"
+                      >
+                        {reviewing === entry.id
+                          ? (locale === 'sv' ? 'Markerar...' : 'Marking...')
+                          : (locale === 'sv' ? 'Markera som granskad' : 'Mark as reviewed')}
+                      </button>
+                    ) : (
+                      <span className="text-xs text-emerald-600/50">
+                        {locale === 'sv' ? 'Granskad' : 'Reviewed'} {new Date(entry.reviewed_at + 'Z').toLocaleDateString(locale === 'sv' ? 'sv-SE' : 'en-US')}
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
           );
         })}
         {filtered.length === 0 && (
-          <div className="px-4 py-8 text-center text-sm text-slate-600">
+          <div className="px-4 py-8 text-center text-sm text-slate-500">
             {locale === 'sv' ? 'Inga ändringar matchar filtret' : 'No changes match the filter'}
           </div>
         )}

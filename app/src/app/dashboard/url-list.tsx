@@ -41,13 +41,13 @@ export function UrlList({ urls }: { urls: WatchedUrl[] }) {
 
   if (urls.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/5 p-12 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-800">
+      <div className="rounded-2xl border border-dashed border-slate-200 p-12 text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
           <svg className="h-6 w-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
           </svg>
         </div>
-        <p className="text-sm font-medium text-slate-400">{t('urls.empty')}</p>
+        <p className="text-sm font-medium text-slate-600">{t('urls.empty')}</p>
         <p className="mt-1 text-xs text-slate-600">{t('urls.empty.desc')}</p>
       </div>
     );
@@ -69,11 +69,11 @@ export function UrlList({ urls }: { urls: WatchedUrl[] }) {
                     {isWaiting && <div className="absolute inset-0 h-2.5 w-2.5 rounded-full bg-amber-500 animate-ping opacity-40" />}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{u.name}</p>
+                    <p className="text-sm font-medium text-slate-900 truncate">{u.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <p className="text-xs text-slate-500 truncate">{u.url}</p>
                       {isWaiting && (
-                        <span className="shrink-0 text-xs text-amber-400/70">{t('urls.waiting')}</span>
+                        <span className="shrink-0 text-xs text-amber-600">{t('urls.waiting')}</span>
                       )}
                       {u.last_checked_at && !hasError && (
                         <span className="shrink-0 text-xs text-slate-600">{t('urls.checked')} {timeAgo(u.last_checked_at)}</span>
@@ -82,11 +82,11 @@ export function UrlList({ urls }: { urls: WatchedUrl[] }) {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  {u.selector && <span className="rounded bg-white/5 px-2 py-0.5 text-xs text-slate-400">{u.selector}</span>}
-                  {u.mobile === 1 && <span className="rounded bg-white/5 px-2 py-0.5 text-xs text-slate-400">mobile</span>}
-                  {(u.cookies || u.headers) && <span className="rounded bg-amber-500/10 px-2 py-0.5 text-xs text-amber-400">auth</span>}
+                  {u.selector && <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{u.selector}</span>}
+                  {u.mobile === 1 && <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600">mobile</span>}
+                  {(u.cookies || u.headers) && <span className="rounded bg-amber-50 px-2 py-0.5 text-xs text-amber-600">auth</span>}
                   <button onClick={() => handleRemove(u.id, u.name)} disabled={removing === u.id}
-                    className="cursor-pointer text-slate-600 transition hover:text-red-400 disabled:opacity-30">
+                    className="cursor-pointer text-slate-400 transition hover:text-red-600 disabled:opacity-30">
                     {removing === u.id ? (
                       <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
                     ) : (
@@ -96,22 +96,22 @@ export function UrlList({ urls }: { urls: WatchedUrl[] }) {
                 </div>
               </div>
               {hasError && (
-                <p className="mt-2 ml-6.5 text-xs text-red-400/80">
+                <p className="mt-2 ml-6.5 text-xs text-red-600">
                   {t('urls.failed')} {u.consecutive_errors}x: {u.last_error?.slice(0, 80)}
                 </p>
               )}
               {u.last_summary && !hasError && (
-                <div className="mt-2 ml-6.5 flex items-start gap-2 rounded-lg bg-white/[0.02] px-3 py-2">
+                <div className="mt-2 ml-6.5 flex items-start gap-2 rounded-lg bg-slate-50 px-3 py-2">
                   {u.last_importance != null && u.last_importance > 0 && (
                     <span className={`shrink-0 mt-0.5 rounded-full px-1.5 py-0.5 text-xs font-medium ${
-                      u.last_importance >= 7 ? 'text-red-400 bg-red-500/20' :
-                      u.last_importance >= 4 ? 'text-orange-400 bg-orange-500/20' :
-                      'text-green-400 bg-green-500/20'
+                      u.last_importance >= 7 ? 'text-red-700 bg-red-50' :
+                      u.last_importance >= 4 ? 'text-orange-700 bg-orange-50' :
+                      'text-green-700 bg-green-50'
                     }`}>
                       {u.last_importance}/10
                     </span>
                   )}
-                  <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">{u.last_summary}</p>
+                  <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">{u.last_summary}</p>
                 </div>
               )}
               {!u.last_summary && u.last_checked_at && !hasError && (

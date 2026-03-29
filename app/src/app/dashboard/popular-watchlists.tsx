@@ -9,6 +9,7 @@ import suggestionsData from '@/data/suggestions.json';
 interface Suggestion {
   url: string; name: string; name_sv: string;
   category: string; description: string; description_sv: string;
+  jurisdiction?: string;
 }
 
 const suggestions = suggestionsData as Suggestion[];
@@ -19,18 +20,18 @@ const categories = [
 ];
 
 const categoryColors: Record<string, string> = {
-  'Finance & Banking': 'text-emerald-400 bg-emerald-500/10',
-  'Transport & Infrastructure': 'text-yellow-400 bg-yellow-500/10',
-  'Health & Pharma': 'text-red-400 bg-red-500/10',
-  'Data & Privacy': 'text-purple-400 bg-purple-500/10',
-  'Environment & Energy': 'text-green-400 bg-green-500/10',
-  'Labor & Workplace': 'text-orange-400 bg-orange-500/10',
-  'Laws & Government': 'text-blue-400 bg-blue-500/10',
-  Legal: 'text-amber-400 bg-amber-500/10',
-  Pricing: 'text-teal-400 bg-teal-500/10',
-  Newsrooms: 'text-pink-400 bg-pink-500/10',
-  Standards: 'text-cyan-400 bg-cyan-500/10',
-  Status: 'text-slate-400 bg-slate-500/10',
+  'Finance & Banking': 'text-emerald-600 bg-emerald-50',
+  'Transport & Infrastructure': 'text-yellow-600 bg-yellow-50',
+  'Health & Pharma': 'text-red-600 bg-red-50',
+  'Data & Privacy': 'text-purple-600 bg-purple-50',
+  'Environment & Energy': 'text-green-600 bg-green-50',
+  'Labor & Workplace': 'text-orange-600 bg-orange-50',
+  'Laws & Government': 'text-blue-600 bg-blue-50',
+  Legal: 'text-amber-600 bg-amber-50',
+  Pricing: 'text-teal-600 bg-teal-50',
+  Newsrooms: 'text-pink-600 bg-pink-50',
+  Standards: 'text-cyan-600 bg-cyan-50',
+  Status: 'text-slate-600 bg-slate-100',
 };
 
 // Vågskålar = reglering, mynt = finans, hjärta = hälsa, sköld = data, blad = miljö, bygge = arbete, riksdag = lagar
@@ -49,12 +50,18 @@ const categoryIcons: Record<string, React.ReactNode> = {
   Status: <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
 };
 
+const jurisdictions = ['SE', 'DK', 'NO', 'FI', 'EU', 'US', 'INTL'] as const;
+const jurisdictionLabels: Record<string, string> = {
+  SE: 'SE', DK: 'DK', NO: 'NO', FI: 'FI', EU: 'EU', US: 'US', INTL: 'Intl',
+};
+
 export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: string[]; canAdd: boolean }) {
   const { locale, t } = useLocale();
   const [adding, setAdding] = useState<string | null>(null);
   const [added, setAdded] = useState<Set<string>>(new Set());
   const [justAdded, setJustAdded] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeJurisdiction, setActiveJurisdiction] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const router = useRouter();
   const { toast, show, clear } = useToast();
@@ -78,21 +85,44 @@ export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: stri
     setAdding(null);
   }, [canAdd, locale, router, show, t]);
 
-  const filtered = activeCategory ? suggestions.filter(s => s.category === activeCategory) : suggestions;
+  const filtered = suggestions.filter(s => {
+    if (activeJurisdiction && s.jurisdiction !== activeJurisdiction) return false;
+    if (activeCategory && s.category !== activeCategory) return false;
+    return true;
+  });
   const visible = expanded ? filtered : filtered.slice(0, 12);
   const hasMore = filtered.length > 12;
 
   return (
     <>
       <div className="space-y-4">
+        {/* Jurisdiction filter (primary) */}
+        <div className="flex gap-2 flex-wrap items-center">
+          <span className="text-xs font-medium text-slate-400 mr-1">{locale === 'sv' ? 'Land:' : 'Country:'}</span>
+          <button onClick={() => setActiveJurisdiction(null)}
+            className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${!activeJurisdiction ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-500 hover:text-slate-700 border border-transparent'}`}>
+            {locale === 'sv' ? 'Alla' : 'All'}
+          </button>
+          {jurisdictions.map(j => {
+            const count = suggestions.filter(s => s.jurisdiction === j).length;
+            if (count === 0) return null;
+            return (
+              <button key={j} onClick={() => setActiveJurisdiction(activeJurisdiction === j ? null : j)}
+                className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${activeJurisdiction === j ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-500 hover:text-slate-700 border border-transparent'}`}>
+                {jurisdictionLabels[j]} <span className="text-slate-400 ml-0.5">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+        {/* Category filter (secondary) */}
         <div className="flex gap-2 flex-wrap">
           <button onClick={() => setActiveCategory(null)}
-            className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${!activeCategory ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}>
+            className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${!activeCategory ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>
             {t('watchlists.all')}
           </button>
           {categories.map(cat => (
             <button key={cat} onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-              className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${activeCategory === cat ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}>
+              className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${activeCategory === cat ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>
               {cat}
             </button>
           ))}
@@ -102,7 +132,7 @@ export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: stri
           {visible.map((s) => {
             const isExisting = existingUrls.includes(s.url) || added.has(s.url);
             const isAdding = adding === s.url;
-            const colors = categoryColors[s.category] || 'text-slate-400 bg-slate-500/10';
+            const colors = categoryColors[s.category] || 'text-slate-600 bg-slate-100';
             const displayName = locale === 'sv' ? s.name_sv : s.name;
             const displayDesc = locale === 'sv' ? s.description_sv : s.description;
 
@@ -113,12 +143,12 @@ export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: stri
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`flex h-6 w-6 items-center justify-center rounded-md ${colors}`}>{categoryIcons[s.category]}</span>
-                    <span className="text-sm font-medium text-white/90 truncate">{displayName}</span>
+                    <span className="text-sm font-medium text-slate-900 truncate">{displayName}</span>
                   </div>
                   <p className="text-xs text-slate-500 leading-relaxed">{displayDesc}</p>
                 </div>
                 <button onClick={() => handleAdd(s)} disabled={isExisting || isAdding}
-                  className={`shrink-0 cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${isExisting ? 'bg-white/5 text-slate-600' : 'bg-blue-500/15 text-blue-400 hover:bg-blue-500/25'} disabled:cursor-default`}>
+                  className={`shrink-0 cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200 ${isExisting ? 'bg-slate-100 text-slate-600' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'} disabled:cursor-default`}>
                   {isExisting ? t('watchlists.added') : isAdding ? '...' : '+ Add'}
                 </button>
               </div>
@@ -128,7 +158,7 @@ export function PopularWatchlists({ existingUrls, canAdd }: { existingUrls: stri
 
         {hasMore && (
           <button onClick={() => setExpanded(!expanded)}
-            className="cursor-pointer flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-blue-400 transition-colors duration-200">
+            className="cursor-pointer flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-blue-600 transition-colors duration-200">
             {expanded ? t('watchlists.showLess') : `${t('watchlists.showAll')} ${filtered.length} ${t('watchlists.suggestions')}`}
             <svg className={`h-3.5 w-3.5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>

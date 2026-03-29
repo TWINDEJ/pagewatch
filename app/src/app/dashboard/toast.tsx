@@ -14,10 +14,10 @@ export function Toast({ message, type, onClose }: ToastProps) {
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  const bg = type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400';
+  const bg = type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-red-50 border-red-200 text-red-700';
 
   return (
-    <div className={`fixed bottom-6 right-6 z-50 rounded-xl border backdrop-blur-xl px-5 py-3 text-sm font-medium shadow-2xl ${bg}`}>
+    <div className={`fixed bottom-6 right-6 z-50 rounded-xl border px-5 py-3 text-sm font-medium shadow-lg ${bg}`}>
       {message}
     </div>
   );

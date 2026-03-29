@@ -25,13 +25,16 @@ export async function PUT(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
   const body = await req.json();
-  const { notifyEmail, slackWebhookUrl, weeklyDigest, digestFrequency } = body;
+  const { notifyEmail, slackWebhookUrl, weeklyDigest, digestFrequency, notifyActionRequired, notifyReviewRecommended, notifyInfoOnly } = body;
 
   await updateUserSettings(user.id as string, {
     notifyEmail: notifyEmail !== undefined ? Boolean(notifyEmail) : undefined,
     slackWebhookUrl: slackWebhookUrl !== undefined ? (slackWebhookUrl || null) : undefined,
     weeklyDigest: weeklyDigest !== undefined ? Boolean(weeklyDigest) : undefined,
     digestFrequency: digestFrequency !== undefined ? String(digestFrequency) : undefined,
+    notifyActionRequired: notifyActionRequired !== undefined ? Boolean(notifyActionRequired) : undefined,
+    notifyReviewRecommended: notifyReviewRecommended !== undefined ? Boolean(notifyReviewRecommended) : undefined,
+    notifyInfoOnly: notifyInfoOnly !== undefined ? Boolean(notifyInfoOnly) : undefined,
   });
 
   return NextResponse.json({ ok: true });

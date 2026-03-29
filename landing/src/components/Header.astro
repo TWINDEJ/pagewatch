@@ -16,15 +16,18 @@ const otherUrl = lang === 'en' ? '/sv' : '/';
             <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" />
           </svg>
         </div>
-        <span class="text-white/90">change<span class="text-blue-400">brief</span></span>
+        <span class="text-slate-900">change<span class="text-blue-600">brief</span></span>
       </a>
       <div class="flex items-center gap-3">
-        <a href={otherUrl} class="cursor-pointer rounded-lg bg-white/5 px-2 py-1 text-xs font-medium text-slate-400 hover:text-white hover:bg-white/10 transition-all duration-200">
+        <a href={lang === 'sv' ? '/sv/compliance' : '/compliance'} class="hidden sm:inline-flex cursor-pointer text-sm font-medium text-slate-600 hover:text-slate-900 transition-all duration-200">
+          {lang === 'sv' ? 'Compliance' : 'Compliance'}
+        </a>
+        <a href={otherUrl} class="cursor-pointer rounded-lg bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all duration-200">
           {otherLang.toUpperCase()}
         </a>
         <a
           href="#pricing"
-          class="btn-glow rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2 text-sm font-semibold text-white transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/20"
+          class="btn-glow rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2 text-sm font-semibold text-white transition-all duration-200"
         >
           {lt('header.cta', lang)}
         </a>

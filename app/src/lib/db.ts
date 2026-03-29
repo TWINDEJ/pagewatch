@@ -78,6 +78,12 @@ export async function initDb() {
     'ALTER TABLE change_history ADD COLUMN jurisdiction TEXT',
     'ALTER TABLE change_history ADD COLUMN document_type TEXT',
     'ALTER TABLE change_history ADD COLUMN compliance_action TEXT',
+    'ALTER TABLE change_history ADD COLUMN reviewed_at TEXT',
+    'ALTER TABLE change_history ADD COLUMN reviewed_by TEXT',
+    'ALTER TABLE change_history ADD COLUMN review_note TEXT',
+    'ALTER TABLE users ADD COLUMN notify_action_required INTEGER DEFAULT 1',
+    'ALTER TABLE users ADD COLUMN notify_review_recommended INTEGER DEFAULT 1',
+    'ALTER TABLE users ADD COLUMN notify_info_only INTEGER DEFAULT 0',
   ]) {
     try { await db.execute(col); } catch { /* column already exists */ }
   }
@@ -118,7 +124,7 @@ export async function updateUserPolarId(userId: string, polarCustomerId: string)
   await getDb().execute({ sql: 'UPDATE users SET polar_customer_id = ? WHERE id = ?', args: [polarCustomerId, userId] });
 }
 
-export async function updateUserSettings(userId: string, settings: { notifyEmail?: boolean; slackWebhookUrl?: string | null; weeklyDigest?: boolean; digestFrequency?: string }) {
+export async function updateUserSettings(userId: string, settings: { notifyEmail?: boolean; slackWebhookUrl?: string | null; weeklyDigest?: boolean; digestFrequency?: string; notifyActionRequired?: boolean; notifyReviewRecommended?: boolean; notifyInfoOnly?: boolean }) {
   const updates: string[] = [];
   const args: any[] = [];
 
@@ -137,6 +143,18 @@ export async function updateUserSettings(userId: string, settings: { notifyEmail
   if (settings.digestFrequency !== undefined) {
     updates.push('digest_frequency = ?');
     args.push(settings.digestFrequency);
+  }
+  if (settings.notifyActionRequired !== undefined) {
+    updates.push('notify_action_required = ?');
+    args.push(settings.notifyActionRequired ? 1 : 0);
+  }
+  if (settings.notifyReviewRecommended !== undefined) {
+    updates.push('notify_review_recommended = ?');
+    args.push(settings.notifyReviewRecommended ? 1 : 0);
+  }
+  if (settings.notifyInfoOnly !== undefined) {
+    updates.push('notify_info_only = ?');
+    args.push(settings.notifyInfoOnly ? 1 : 0);
   }
 
   if (updates.length === 0) return;
@@ -280,6 +298,27 @@ export async function getComplianceTrend(userId: string) {
   return result.rows;
 }
 
+export async function markChangeReviewed(userId: string, changeId: number, reviewedBy?: string, reviewNote?: string) {
+  await getDb().execute({
+    sql: 'UPDATE change_history SET reviewed_at = datetime(\'now\'), reviewed_by = ?, review_note = ? WHERE id = ? AND user_id = ?',
+    args: [reviewedBy ?? null, reviewNote ?? null, changeId, userId],
+  });
+}
+
+export async function markAllChangesReviewed(userId: string, reviewedBy?: string) {
+  await getDb().execute({
+    sql: 'UPDATE change_history SET reviewed_at = datetime(\'now\'), reviewed_by = ? WHERE user_id = ? AND has_significant_change = 1 AND reviewed_at IS NULL',
+    args: [reviewedBy ?? null, userId],
+  });
+}
+
+export async function updateReviewNote(userId: string, changeId: number, reviewNote: string) {
+  await getDb().execute({
+    sql: 'UPDATE change_history SET review_note = ? WHERE id = ? AND user_id = ?',
+    args: [reviewNote, changeId, userId],
+  });
+}
+
 export async function deleteChangeHistoryByUrl(userId: string, url: string) {
   await getDb().execute({ sql: 'DELETE FROM change_history WHERE user_id = ? AND url = ?', args: [userId, url] });
 }
@@ -322,6 +361,66 @@ export async function getDashboardStats(userId: string) {
     totalChecks7d: Number(totalResult.rows[0].count),
     lastCheck: (lastCheckResult.rows[0] as any)?.last_check as string | null,
   };
+}
+
+// ─── Compliance summary ───
+
+export async function getComplianceActionSummary(userId: string) {
+  const db = getDb();
+  const [pendingResult, reviewedResult] = await Promise.all([
+    db.execute({
+      sql: `SELECT compliance_action, COUNT(*) as count
+            FROM change_history
+            WHERE user_id = ? AND compliance_action IS NOT NULL AND reviewed_at IS NULL
+            GROUP BY compliance_action`,
+      args: [userId],
+    }),
+    db.execute({
+      sql: `SELECT COUNT(*) as count FROM change_history
+            WHERE user_id = ? AND compliance_action IS NOT NULL
+            AND reviewed_at IS NOT NULL AND reviewed_at >= datetime('now', '-7 days')`,
+      args: [userId],
+    }),
+  ]);
+  const pending: Record<string, number> = {};
+  for (const row of pendingResult.rows as any[]) {
+    pending[row.compliance_action] = Number(row.count);
+  }
+  return {
+    actionRequired: pending['action_required'] ?? 0,
+    reviewRecommended: pending['review_recommended'] ?? 0,
+    infoOnly: pending['info_only'] ?? 0,
+    reviewedThisWeek: Number((reviewedResult.rows[0] as any).count),
+  };
+}
+
+export async function getComplianceOverview(userId: string) {
+  const result = await getDb().execute({
+    sql: `SELECT
+            wu.id, wu.url, wu.name, wu.category,
+            ch.jurisdiction,
+            ch.checked_at as last_change_at,
+            ch.compliance_action,
+            ch.document_type,
+            ch.reviewed_at,
+            ch.reviewed_by,
+            ch.summary as last_summary,
+            ch.importance
+          FROM watched_urls wu
+          LEFT JOIN change_history ch ON ch.id = (
+            SELECT id FROM change_history
+            WHERE user_id = wu.user_id AND url = wu.url AND compliance_action IS NOT NULL
+            ORDER BY checked_at DESC LIMIT 1
+          )
+          WHERE wu.user_id = ? AND wu.category IS NOT NULL
+          ORDER BY
+            CASE WHEN ch.compliance_action = 'action_required' THEN 0
+                 WHEN ch.compliance_action = 'review_recommended' THEN 1
+                 ELSE 2 END,
+            ch.checked_at DESC`,
+    args: [userId],
+  });
+  return result.rows;
 }
 
 // ─── Plan limits ───

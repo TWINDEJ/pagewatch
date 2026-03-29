@@ -8,7 +8,7 @@ export function SignOutButton() {
   return (
     <button
       onClick={() => signOut({ callbackUrl: '/' })}
-      className="cursor-pointer text-sm text-slate-500 transition hover:text-white"
+      className="cursor-pointer text-sm text-slate-500 transition hover:text-slate-900"
     >
       {t('header.signout')}
     </button>

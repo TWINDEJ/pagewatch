@@ -136,6 +136,55 @@ const translations = {
 
   // ─── Checkout ───
   'checkout.success': { en: 'Plan upgraded! Welcome aboard.', sv: 'Plan uppgraderad! Välkommen ombord.' },
+
+  // ─── Compliance Tabs ───
+  'ctabs.title': { en: 'Compliance', sv: 'Regelefterlevnad' },
+  'ctabs.changes': { en: 'Recent Changes', sv: 'Senaste ändringar' },
+  'ctabs.sources': { en: 'Sources', sv: 'Källor' },
+  'ctabs.trend': { en: 'Trend', sv: 'Trend' },
+
+  // ─── Compliance Overview ───
+  'coverview.source': { en: 'Source', sv: 'Källa' },
+  'coverview.jurisdiction': { en: 'Jurisdiction', sv: 'Jurisdiktion' },
+  'coverview.lastChange': { en: 'Last Change', sv: 'Senaste ändring' },
+  'coverview.actionLevel': { en: 'Action Level', sv: 'Åtgärdsnivå' },
+  'coverview.status': { en: 'Status', sv: 'Status' },
+  'coverview.documentType': { en: 'Document Type', sv: 'Dokumenttyp' },
+  'coverview.allJurisdictions': { en: 'All jurisdictions', sv: 'Alla jurisdiktioner' },
+  'coverview.allStatuses': { en: 'All', sv: 'Alla' },
+  'coverview.pending': { en: 'Pending', sv: 'Väntar' },
+  'coverview.reviewed': { en: 'Reviewed', sv: 'Granskade' },
+  'coverview.print': { en: 'Print', sv: 'Skriv ut' },
+  'coverview.empty.title': { en: 'No compliance sources yet', sv: 'Inga compliance-källor ännu' },
+  'coverview.empty.desc': { en: 'Add regulatory authorities from the Discover section below to start monitoring.', sv: 'Lägg till myndigheter från Upptäck-sektionen nedan för att börja bevaka.' },
+  'coverview.noMatch': { en: 'No sources match the filter', sv: 'Inga källor matchar filtret' },
+  'coverview.reviewedBy': { en: 'Reviewed by', sv: 'Granskad av' },
+  'coverview.neverChanged': { en: 'No change yet', sv: 'Ingen ändring ännu' },
+  'coverview.actionRequired': { en: 'Action required', sv: 'Åtgärd krävs' },
+  'coverview.reviewRecommended': { en: 'Review recommended', sv: 'Granskning rekommenderas' },
+  'coverview.infoOnly': { en: 'Info only', sv: 'Bara info' },
+
+  // ─── Compliance Onboarding ───
+  'conboard.step1.title': { en: 'Select your jurisdictions', sv: 'Välj dina jurisdiktioner' },
+  'conboard.step1.desc': { en: 'Which countries\' regulations do you need to monitor?', sv: 'Vilka länders regelverk behöver ni bevaka?' },
+  'conboard.step2.title': { en: 'Select your sector', sv: 'Välj er sektor' },
+  'conboard.step2.desc': { en: 'What industry are you in?', sv: 'Vilken bransch tillhör ni?' },
+  'conboard.step3.title': { en: 'Recommended authorities', sv: 'Rekommenderade myndigheter' },
+  'conboard.step3.desc': { en: 'Based on your selection, we recommend monitoring these authorities:', sv: 'Baserat på ditt val rekommenderar vi att bevaka dessa myndigheter:' },
+  'conboard.addAll': { en: 'Add all recommended', sv: 'Lägg till alla rekommenderade' },
+  'conboard.adding': { en: 'Adding', sv: 'Lägger till' },
+  'conboard.of': { en: 'of', sv: 'av' },
+  'conboard.done': { en: 'All added! Refreshing...', sv: 'Alla tillagda! Uppdaterar...' },
+  'conboard.noMatch': { en: 'No authorities match your selection. Try broadening your filters.', sv: 'Inga myndigheter matchar ditt val. Prova att bredda dina filter.' },
+  'conboard.skip': { en: 'Skip', sv: 'Hoppa över' },
+  'conboard.back': { en: 'Back', sv: 'Tillbaka' },
+  'conboard.next': { en: 'Next', sv: 'Nästa' },
+
+  // ─── Notification preferences ───
+  'settings.notify.heading': { en: 'Notify me for', sv: 'Meddela mig vid' },
+  'settings.notify.action': { en: 'Action required', sv: 'Åtgärd krävs' },
+  'settings.notify.review': { en: 'Review recommended', sv: 'Granskning rekommenderas' },
+  'settings.notify.info': { en: 'Info only', sv: 'Bara info' },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
