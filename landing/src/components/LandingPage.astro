@@ -156,50 +156,65 @@ const structuredData = {
           <h2 class="text-3xl font-bold tracking-tight theme-text sm:text-4xl lg:text-5xl">{lt('price.h2', lang)}</h2>
           <p class="mx-auto mt-4 max-w-2xl text-lg theme-text-secondary">{lt('price.sub', lang)}</p>
         </div>
-        <div class="mt-16 grid gap-6 lg:grid-cols-3">
+        <div class="mt-16 grid gap-6 lg:grid-cols-4">
           <!-- Free -->
-          <div class="animate-fade-in-up glass-card rounded-2xl p-8 flex flex-col">
+          <div class="animate-fade-in-up glass-card rounded-2xl p-7 flex flex-col">
             <h3 class="text-lg font-semibold theme-text-muted">Free</h3>
             <div class="mt-4 flex items-baseline gap-1"><span class="text-4xl font-bold theme-text">$0</span><span class="theme-text-muted">{lt('price.mo', lang)}</span></div>
             <p class="mt-4 text-sm theme-text-muted">{lt('price.free.desc', lang)}</p>
             <ul class="mt-8 space-y-3 text-sm theme-text-secondary flex-1">
-              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>3 {lt('price.pages', lang)}</li>
-              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>100 {lt('price.checks', lang)}</li>
-              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lt('feat.ai', lang)}</li>
-              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>7 {lt('price.days', lang)}</li>
+              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>3 {lt('price.pages', lang)}</li>
+              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>100 {lt('price.checks', lang)}</li>
+              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lt('feat.ai', lang)}</li>
+              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>7 {lt('price.days', lang)}</li>
             </ul>
             <a href="https://app.changebrief.io" class="mt-8 block rounded-xl border theme-border theme-bg py-3 text-center text-sm font-semibold theme-text-secondary transition-all duration-200 hover:border-slate-300 hover:bg-[var(--bg-secondary)] cursor-pointer">{lt('price.free.cta', lang)}</a>
           </div>
           <!-- Pro -->
           <div class="animate-fade-in-up relative rounded-2xl ring-2 ring-blue-500 p-px flex flex-col">
             <div class="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-1 text-xs font-semibold text-white">{lt('price.popular', lang)}</div>
-            <div class="rounded-2xl theme-bg p-8 flex flex-col flex-1">
+            <div class="rounded-2xl theme-bg p-7 flex flex-col flex-1">
               <h3 class="text-lg font-semibold theme-text">Pro</h3>
               <div class="mt-4 flex items-baseline gap-1"><span class="text-4xl font-bold theme-text">$19</span><span class="theme-text-muted">{lt('price.mo', lang)}</span></div>
               <p class="mt-1 text-xs theme-text-muted">{lt('price.or', lang)} $190{lt('price.year', lang)} ({lt('price.save', lang)})</p>
               <p class="mt-4 text-sm theme-text-secondary">{lt('price.pro.desc', lang)}</p>
               <ul class="mt-8 space-y-3 text-sm theme-text-secondary flex-1">
                 <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>25 {lt('price.pages', lang)}</li>
-                <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>2,000 {lt('price.checks', lang)}</li>
-                <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>90 {lt('price.days', lang)}</li>
-                <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lt('price.schedule15', lang)}</li>
+                <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lang === 'sv' ? 'PDF-rapport & CSV' : 'PDF report & CSV export'}</li>
+                <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lang === 'sv' ? 'GRC webhook' : 'GRC webhook integration'}</li>
+                <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lang === 'sv' ? 'SLA-uppföljning' : 'SLA deadline tracking'}</li>
               </ul>
               <a href="https://buy.polar.sh/polar_cl_JDnQNmWBFMsJp56ntC0GPsweHhIizDVhwWGIk4CAFVF" class="btn-glow mt-8 block rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-center text-sm font-semibold text-white transition-all duration-200 cursor-pointer">{lt('price.pro.cta', lang)}</a>
             </div>
           </div>
           <!-- Team -->
-          <div class="animate-fade-in-up glass-card rounded-2xl p-8 flex flex-col">
+          <div class="animate-fade-in-up glass-card rounded-2xl p-7 flex flex-col">
             <h3 class="text-lg font-semibold theme-text-muted">Team</h3>
             <div class="mt-4 flex items-baseline gap-1"><span class="text-4xl font-bold theme-text">$49</span><span class="theme-text-muted">{lt('price.mo', lang)}</span></div>
             <p class="mt-1 text-xs theme-text-muted">{lt('price.or', lang)} $490{lt('price.year', lang)} ({lt('price.save', lang)})</p>
             <p class="mt-4 text-sm theme-text-muted">{lt('price.team.desc', lang)}</p>
             <ul class="mt-8 space-y-3 text-sm theme-text-secondary flex-1">
-              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>100 {lt('price.pages', lang)}</li>
-              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>10,000 {lt('price.checks', lang)}</li>
-              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lt('price.everything', lang)}</li>
-              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lt('price.1year', lang)}</li>
+              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>100 {lt('price.pages', lang)}</li>
+              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lt('price.everything', lang)}</li>
+              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lang === 'sv' ? 'Tilldela till team' : 'Assign to team members'}</li>
+              <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-blue-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lt('price.1year', lang)}</li>
             </ul>
             <a href="https://buy.polar.sh/polar_cl_HmjMU2dLQz7qe5fAcTjK2SsssRYDPboqXQJXd4QgARz" class="mt-8 block rounded-xl border theme-border theme-bg py-3 text-center text-sm font-semibold theme-text-secondary transition-all duration-200 hover:border-slate-300 hover:bg-[var(--bg-secondary)] cursor-pointer">{lt('price.team.cta', lang)}</a>
+          </div>
+          <!-- Enterprise -->
+          <div class="animate-fade-in-up relative rounded-2xl bg-gradient-to-b from-emerald-500/[0.06] to-blue-500/[0.03] p-px flex flex-col">
+            <div class="rounded-2xl theme-bg p-7 flex flex-col flex-1">
+              <h3 class="text-lg font-semibold theme-text">Enterprise</h3>
+              <div class="mt-4 flex items-baseline gap-1"><span class="text-2xl font-bold theme-text">{lang === 'sv' ? 'Anpassat' : 'Custom'}</span></div>
+              <p class="mt-4 text-sm theme-text-secondary">{lang === 'sv' ? 'För organisationer med regulatoriska krav.' : 'For organizations with regulatory requirements.'}</p>
+              <ul class="mt-8 space-y-3 text-sm theme-text-secondary flex-1">
+                <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lang === 'sv' ? 'Obegränsat antal sidor' : 'Unlimited pages'}</li>
+                <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>SSO / SAML</li>
+                <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lang === 'sv' ? 'DPA & SLA-garanti' : 'DPA & SLA guarantee'}</li>
+                <li class="flex items-center gap-3"><svg class="h-4 w-4 shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>{lang === 'sv' ? 'Fakturering' : 'Invoice billing'}</li>
+              </ul>
+              <a href="mailto:kristian@changebrief.io?subject=Enterprise%20inquiry" class="btn-glow mt-8 block rounded-xl bg-gradient-to-r from-emerald-600 to-blue-600 py-3 text-center text-sm font-semibold text-white transition-all duration-200 cursor-pointer">{lang === 'sv' ? 'Kontakta oss' : 'Contact us'}</a>
+            </div>
           </div>
         </div>
       </div>
@@ -246,9 +261,9 @@ const structuredData = {
         <span class="theme-text">change<span class="text-blue-600">brief</span></span>
       </div>
       <nav class="flex gap-6 text-sm theme-text-muted">
-        <a href="#" class="transition-colors duration-200 hover:text-[var(--text-primary)] cursor-pointer">{lt('footer.docs', lang)}</a>
-        <a href="#" class="transition-colors duration-200 hover:text-[var(--text-primary)] cursor-pointer">{lt('footer.privacy', lang)}</a>
-        <a href="#" class="transition-colors duration-200 hover:text-[var(--text-primary)] cursor-pointer">{lt('footer.contact', lang)}</a>
+        <a href={lang === 'sv' ? '/sv/security' : '/security'} class="transition-colors duration-200 hover:text-[var(--text-primary)] cursor-pointer">{lang === 'sv' ? 'Säkerhet' : 'Security & Trust'}</a>
+        <a href={lang === 'sv' ? '/sv/compliance' : '/compliance'} class="transition-colors duration-200 hover:text-[var(--text-primary)] cursor-pointer">Compliance</a>
+        <a href="mailto:kristian@changebrief.io" class="transition-colors duration-200 hover:text-[var(--text-primary)] cursor-pointer">{lt('footer.contact', lang)}</a>
       </nav>
       <p class="text-sm theme-text-muted">&copy; 2026 changebrief</p>
     </div>
