@@ -6,7 +6,6 @@ import { useLocale } from '../locale-provider';
 interface SettingsProps {
   initialNotifyEmail: boolean;
   initialSlackWebhookUrl: string;
-  initialWeeklyDigest: boolean;
   initialDigestFrequency: string;
   initialNotifyActionRequired?: boolean;
   initialNotifyReviewRecommended?: boolean;
@@ -14,7 +13,7 @@ interface SettingsProps {
   plan: string;
 }
 
-export function SettingsForm({ initialNotifyEmail, initialSlackWebhookUrl, initialWeeklyDigest: _initialWeeklyDigest, initialDigestFrequency, initialNotifyActionRequired = true, initialNotifyReviewRecommended = true, initialNotifyInfoOnly = false, plan }: SettingsProps) {
+export function SettingsForm({ initialNotifyEmail, initialSlackWebhookUrl, initialDigestFrequency, initialNotifyActionRequired = true, initialNotifyReviewRecommended = true, initialNotifyInfoOnly = false, plan }: SettingsProps) {
   const { t } = useLocale();
   const [notifyEmail, setNotifyEmail] = useState(initialNotifyEmail);
   const [digestFrequency, setDigestFrequency] = useState(initialDigestFrequency || 'weekly');

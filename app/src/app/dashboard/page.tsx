@@ -221,7 +221,6 @@ export default async function DashboardPage({
                   <SettingsForm
                     initialNotifyEmail={user.notify_email !== 0}
                     initialSlackWebhookUrl={(user.slack_webhook_url as string) || ''}
-                    initialWeeklyDigest={user.weekly_digest !== 0}
                     initialDigestFrequency={(user.digest_frequency as string) || 'weekly'}
                     initialNotifyActionRequired={(user as any).notify_action_required !== 0}
                     initialNotifyReviewRecommended={(user as any).notify_review_recommended !== 0}
