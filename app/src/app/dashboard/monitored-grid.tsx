@@ -3,6 +3,8 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Toast, useToast } from './toast';
+import { CopyUrl } from './copy-url';
+import { LiveTime } from './live-time';
 import { useLocale } from '../locale-provider';
 
 interface WatchedUrl {
@@ -230,7 +232,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
                 )}
                 {u.last_checked_at && !hasError && !isMuted && (
                   <span className="text-xs text-slate-600">
-                    {t('urls.checked')} {timeAgo(u.last_checked_at)}
+                    {t('urls.checked')} <LiveTime dateStr={u.last_checked_at} />
                   </span>
                 )}
                 {hasError && !isMuted && (
@@ -275,7 +277,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
 
               {/* Expanded details */}
               {isExpanded && (
-                <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs animate-fade-in">
+                <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs animate-expand">
                   <div>
                     <span className="text-slate-500 block">{locale === 'sv' ? 'Tröskel' : 'Threshold'}</span>
                     <span className="text-slate-700">{u.threshold}%</span>
@@ -295,10 +297,7 @@ export function MonitoredGrid({ urls }: { urls: WatchedUrl[] }) {
                     </div>
                   )}
                   <div className="col-span-2 sm:col-span-4">
-                    <a href={u.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-                      className="text-blue-600 hover:text-blue-700 transition break-all">
-                      {u.url}
-                    </a>
+                    <CopyUrl url={u.url} className="break-all text-xs" />
                   </div>
                 </div>
               )}

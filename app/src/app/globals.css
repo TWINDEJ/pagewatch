@@ -176,6 +176,68 @@ input:focus, select:focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
+/* ─── Smooth expand/collapse ─── */
+
+@keyframes expand-down {
+  from { opacity: 0; max-height: 0; transform: translateY(-4px); }
+  to { opacity: 1; max-height: 500px; transform: translateY(0); }
+}
+
+.animate-expand {
+  animation: expand-down 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  overflow: hidden;
+}
+
+/* ─── Gradient card borders on hover ─── */
+
+.glass-card {
+  position: relative;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent, transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glass-card:hover::before {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+  opacity: 1;
+}
+
+/* ─── Smooth theme transitions ─── */
+
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0s;
+}
+
+[data-theme-transitioning] *, [data-theme-transitioning] *::before, [data-theme-transitioning] *::after {
+  transition-duration: 0.3s !important;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* ─── Copy button animation ─── */
+
+@keyframes copy-flash {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.animate-copy-flash {
+  animation: copy-flash 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 /* ─── Respect reduced motion ─── */
 
 @media (prefers-reduced-motion: reduce) {

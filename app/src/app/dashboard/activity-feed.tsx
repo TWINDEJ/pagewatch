@@ -267,7 +267,7 @@ export function ActivityFeed({ history: initialHistory, plan = 'free' }: { histo
               </button>
 
               {isOpen && (
-                <div className="px-4 pb-3 pt-0 ml-32 space-y-2">
+                <div className="px-4 pb-3 pt-0 ml-32 space-y-2 animate-expand">
                   {entry.summary && (
                     <p className="text-sm text-slate-700 leading-relaxed">{entry.summary}</p>
                   )}

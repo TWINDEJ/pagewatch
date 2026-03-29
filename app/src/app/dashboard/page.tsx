@@ -21,6 +21,7 @@ import { LanguageSwitcher } from '../locale-provider';
 import { ThemeToggle } from './theme-toggle';
 import { AnimatedNumber } from './animated-number';
 import { DashboardShell } from './dashboard-shell';
+import { FaviconBadge } from './favicon-badge';
 import ComplianceOnboarding from './compliance-onboarding';
 
 function formatLastCheck(dateStr: string | null, locale: Locale): string {
@@ -71,6 +72,7 @@ export default async function DashboardPage({
 
       {/* Checkout success toast */}
       <CheckoutToast show={checkoutSuccess} />
+      <FaviconBadge count={complianceSummary.actionRequired + complianceSummary.reviewRecommended} />
 
       <DashboardShell header={
         <div className="mx-auto flex max-w-5xl items-center justify-between">

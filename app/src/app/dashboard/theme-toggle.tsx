@@ -11,6 +11,8 @@ export function ThemeToggle() {
 
   const toggle = () => {
     const next = !isDark;
+    // Smooth theme transition
+    document.documentElement.setAttribute('data-theme-transitioning', '');
     if (next) {
       document.documentElement.setAttribute('data-theme', 'dark');
       localStorage.setItem('cb-theme', 'dark');
@@ -19,6 +21,7 @@ export function ThemeToggle() {
       localStorage.setItem('cb-theme', 'light');
     }
     setIsDark(next);
+    setTimeout(() => document.documentElement.removeAttribute('data-theme-transitioning'), 350);
   };
 
   return (
